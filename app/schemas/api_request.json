@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GuardRequest",
+  "type": "object",
+  "required": ["response"],
+  "properties": {
+    "response": {"type": "string"},
+    "policy_id": {"type": "string", "default": "default"},
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

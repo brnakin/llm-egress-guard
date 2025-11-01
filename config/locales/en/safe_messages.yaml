@@ -1,0 +1,7 @@
+safe_messages:
+  blocked:
+    title: "Response blocked"
+    description: "The assistant response was blocked due to sensitive content."
+  masked:
+    title: "Content masked"
+    description: "Sensitive details were masked to protect user data."

@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.egg-info/
+.eggs/
+build/
+dist/
+.env
+.venv
+.env.*
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.sqlite3
+.coverage
+.pytest_cache/
+.cache/
+# TLS dev certs kept under version control
+!.gitignore

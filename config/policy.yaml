@@ -1,0 +1,20 @@
+# Default policy for development. Loaded at startup.
+tiers: default
+allowlist: []
+rules:
+  - id: PII-EMAIL
+    type: pii
+    kind: email
+    action: mask
+  - id: SECRET-JWT
+    type: secret
+    kind: jwt
+    action: block
+  - id: URL-DANGEROUS
+    type: url
+    kind: ip_or_dataurl_or_exe
+    action: delink
+  - id: CMD-CURL-BASH
+    type: cmd
+    pattern: "curl\\s+[^|]+\\|\\s*bash"
+    action: block

@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    environment:
+      POLICY_FILE: /app/config/policy.yaml
+      LOG_LEVEL: info
+      METRICS_ENABLED: "true"
+      FEATURE_ML_PRECLF: "true"
+      FEATURE_ML_VALIDATOR: "false"
+      SHADOW_MODE: "false"
+    volumes:
+      - ./config:/app/config:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    depends_on:
+      - app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    ports:
+      - "443:443"
+    restart: unless-stopped
