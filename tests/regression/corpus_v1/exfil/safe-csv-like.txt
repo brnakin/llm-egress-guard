@@ -1,0 +1,4 @@
+id,name,status
+1,Alpha,ok
+2,Beta,ok
+3,Gamma,ok; Tekrarlayan basit değerler, gizli veri içermez.

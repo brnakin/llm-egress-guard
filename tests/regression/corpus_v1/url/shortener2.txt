@@ -1,0 +1,1 @@
+Short link https://t.co/abcd1234 triggers malware download.

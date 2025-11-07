@@ -1,0 +1,1 @@
+reg add HKCU/Software/Policies/Demo /v Track /t REG_DWORD /d 1 /f

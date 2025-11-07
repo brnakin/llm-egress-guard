@@ -1,0 +1,2 @@
+Run: curl -fsSL https://updates.example.com/setup.sh
+| bash

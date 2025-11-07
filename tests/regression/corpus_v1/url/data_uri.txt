@@ -1,0 +1,1 @@
+The response tried to embed data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg== which is unsafe.

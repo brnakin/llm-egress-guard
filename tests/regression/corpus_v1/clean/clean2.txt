@@ -1,0 +1,1 @@
+All values are placeholders like user at example dot com and should not trigger detections.

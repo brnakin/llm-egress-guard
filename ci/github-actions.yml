@@ -1,1 +1,39 @@
-# CI pipeline placeholder. Populate once automation is introduced.
+name: ci
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Lint
+        run: |
+          ruff check app tests
+          black --check app tests
+
+      - name: Unit tests
+        env:
+          POLICY_FILE: config/policy.yaml
+        run: pytest tests/unit -q
+
+      - name: Regression suite
+        env:
+          POLICY_FILE: config/policy.yaml
+        run: python tests/regression/runner.py

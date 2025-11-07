@@ -1,20 +1,336 @@
 # Default policy for development. Loaded at startup.
+version: 2
 tiers: default
-allowlist: []
+allowlist:
+  - value: "https://status.example.com"
+    types: ["url"]
+  - value: "support@company.com"
+    types: ["pii"]
+allowlist_regex:
+  - regex: "(?i)public@company\\.com"
+    types: ["pii"]
+tenant_allowlist:
+  internal-lab:
+    - value: "curl https://docs.company.com/install.sh | bash"
+      types: ["cmd"]
 rules:
+  # ---------- PII ----------
   - id: PII-EMAIL
     type: pii
     kind: email
     action: mask
+    severity: medium
+    risk_weight: 15
+    safe_message: masked
+  - id: PII-PHONE-TR
+    type: pii
+    kind: phone_tr
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-EN
+    type: pii
+    kind: phone_en
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-DE
+    type: pii
+    kind: phone_de
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-FR
+    type: pii
+    kind: phone_fr
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-ES
+    type: pii
+    kind: phone_es
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-IT
+    type: pii
+    kind: phone_it
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-PT
+    type: pii
+    kind: phone_pt
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-HI
+    type: pii
+    kind: phone_hi
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-ZH
+    type: pii
+    kind: phone_zh
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-PHONE-RU
+    type: pii
+    kind: phone_ru
+    action: mask
+    severity: medium
+    risk_weight: 12
+    safe_message: masked
+  - id: PII-IBAN-TR
+    type: pii
+    kind: iban_tr
+    action: mask
+    severity: high
+    risk_weight: 30
+    safe_message: masked
+  - id: PII-IBAN-DE
+    type: pii
+    kind: iban_de
+    action: mask
+    severity: high
+    risk_weight: 30
+    safe_message: masked
+  - id: PII-TCKN
+    type: pii
+    kind: tckn
+    action: mask
+    severity: high
+    risk_weight: 35
+    safe_message: masked
+  - id: PII-PAN
+    type: pii
+    kind: pan
+    action: block
+    severity: critical
+    risk_weight: 45
+    safe_message: blocked
+  - id: PII-IPV4
+    type: pii
+    kind: ipv4
+    action: mask
+    severity: medium
+    risk_weight: 10
+    safe_message: masked
+  # ---------- Secrets ----------
   - id: SECRET-JWT
     type: secret
     kind: jwt
     action: block
-  - id: URL-DANGEROUS
+    severity: high
+    risk_weight: 40
+    safe_message: blocked
+  - id: SECRET-AWS-AK
+    type: secret
+    kind: aws_access_key
+    action: block
+    severity: critical
+    risk_weight: 45
+    safe_message: blocked
+  - id: SECRET-AWS-SK
+    type: secret
+    kind: aws_secret_key
+    action: block
+    severity: critical
+    risk_weight: 45
+    safe_message: blocked
+  - id: SECRET-OPENAI
+    type: secret
+    kind: openai_api_key
+    action: block
+    severity: high
+    risk_weight: 40
+    safe_message: blocked
+  - id: SECRET-GITHUB
+    type: secret
+    kind: github_token
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: SECRET-SLACK
+    type: secret
+    kind: slack_token
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: SECRET-STRIPE
+    type: secret
+    kind: stripe_key
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: SECRET-TWILIO
+    type: secret
+    kind: twilio_key
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: SECRET-AZURE-SAS
+    type: secret
+    kind: azure_sas
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: SECRET-GCP-SA
+    type: secret
+    kind: gcp_service_account
+    action: block
+    severity: critical
+    risk_weight: 50
+    safe_message: blocked
+  - id: SECRET-PEM
+    type: secret
+    kind: pem_private_key
+    action: block
+    severity: critical
+    risk_weight: 60
+    safe_message: blocked
+  - id: SECRET-HIGH-ENTROPY
+    type: secret
+    kind: high_entropy
+    action: block
+    severity: high
+    risk_weight: 30
+    safe_message: blocked
+  # ---------- URL ----------
+  - id: URL-DATA-URI
     type: url
-    kind: ip_or_dataurl_or_exe
+    kind: data_uri
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: URL-EXECUTABLE
+    type: url
+    kind: executable_ext
     action: delink
+    severity: high
+    risk_weight: 25
+    safe_message: masked
+  - id: URL-IP-LITERAL
+    type: url
+    kind: ip_literal
+    action: delink
+    severity: medium
+    risk_weight: 20
+    safe_message: masked
+  - id: URL-CREDENTIALS
+    type: url
+    kind: cred_in_url
+    action: block
+    severity: high
+    risk_weight: 30
+    safe_message: blocked
+  - id: URL-SHORTENER
+    type: url
+    kind: shortener
+    action: delink
+    severity: medium
+    risk_weight: 15
+    safe_message: masked
+  - id: URL-SUSPICIOUS-TLD
+    type: url
+    kind: suspicious_tld
+    action: delink
+    severity: medium
+    risk_weight: 18
+    safe_message: masked
+  # ---------- Commands ----------
   - id: CMD-CURL-BASH
     type: cmd
-    pattern: "curl\\s+[^|]+\\|\\s*bash"
+    kind: curl_pipe
     action: block
+    severity: high
+    risk_weight: 40
+    safe_message: blocked
+  - id: CMD-WGET-BASH
+    type: cmd
+    kind: wget_pipe
+    action: block
+    severity: high
+    risk_weight: 40
+    safe_message: blocked
+  - id: CMD-POWERSHELL-ENC
+    type: cmd
+    kind: powershell_encoded
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: CMD-POWERSHELL-IWR
+    type: cmd
+    kind: powershell_iwr
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: CMD-RM-RF
+    type: cmd
+    kind: rm_rf
+    action: block
+    severity: critical
+    risk_weight: 50
+    safe_message: blocked
+  - id: CMD-REG-ADD
+    type: cmd
+    kind: reg_add
+    action: block
+    severity: medium
+    risk_weight: 25
+    safe_message: blocked
+  - id: CMD-CERTUTIL
+    type: cmd
+    kind: certutil
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: CMD-MSHTA
+    type: cmd
+    kind: mshta
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  - id: CMD-RUNDLL32
+    type: cmd
+    kind: rundll32
+    action: block
+    severity: high
+    risk_weight: 35
+    safe_message: blocked
+  # ---------- Exfil ----------
+  - id: EXFIL-LARGE-B64
+    type: exfil
+    kind: large_base64
+    action: block
+    severity: high
+    risk_weight: 40
+    safe_message: blocked
+  - id: EXFIL-LARGE-HEX
+    type: exfil
+    kind: large_hex
+    action: block
+    severity: medium
+    risk_weight: 30
+    safe_message: blocked

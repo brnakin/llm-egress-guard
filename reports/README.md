@@ -38,9 +38,8 @@ Reports are written in Markdown and can be viewed:
 | Sprint | Date | Status | Report |
 |--------|------|--------|--------|
 | Sprint 1 | Oct 17-31, 2025 | ✅ Complete | [Sprint-1-Report.md](Sprint-1-Report.md) |
-| Sprint 2 | TBD | ⏳ Planned | - |
+| Sprint 2 | Nov 1-14, 2025 | ✅ Complete | [Sprint-2-Report.md](Sprint-2-Report.md) |
 
 ---
 
 *Reports are maintained as part of the LLM Egress Guard project documentation.*
-

@@ -1,0 +1,1 @@
+Helpful tip: always redact secrets before sharing documentation.

@@ -1,0 +1,2 @@
+La documentation est ici: https://docs.école.test/guide/introduction.html
+et couvre les bases.

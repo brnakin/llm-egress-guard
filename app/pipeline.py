@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from time import perf_counter
 from typing import Any
 
@@ -42,7 +42,7 @@ class PipelineResult:
     def asdict(self) -> dict[str, Any]:
         return {
             "response": self.response,
-            "findings": [finding.__dict__ for finding in self.findings],
+            "findings": [asdict(finding) for finding in self.findings],
             "blocked": self.blocked,
             "risk_score": self.risk_score,
             "policy_id": self.policy_id,
@@ -64,7 +64,31 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
     policy_view = policy.select_policy(loaded_policy, guard_request.policy_id)
 
     findings: list[Finding] = []
-    # Future sprints: call detectors and populate findings
+    metadata = guard_request.metadata or {}
+    rules_by_id = policy_view.rules_by_id
+
+    from app.detectors import scan_all  # imported lazily to avoid circular imports
+
+    for detector_name, detector_findings, detector_latency in scan_all(
+        parsed.text,
+        policy=policy_view,
+        metadata=metadata,
+    ):
+        severities = []
+        for finding in detector_findings:
+            rule = rules_by_id.get(finding.rule_id)
+            if rule is not None:
+                severities.append(rule.severity)
+
+        metrics.observe_detector(
+            detector=detector_name,
+            latency_ms=detector_latency,
+            severities=severities,
+        )
+
+        findings.extend(detector_findings)
+        if any(finding.action == "block" for finding in detector_findings):
+            break
 
     decision = policy.evaluate(policy_view, findings=findings, metadata=guard_request.metadata)
 

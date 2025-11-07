@@ -1,0 +1,2 @@
+Consulta el panel en http://backup-admin.login.corp-account[.]zip
+; podría no ser seguro.

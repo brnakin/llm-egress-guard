@@ -1,0 +1,1 @@
+Use https://user:pass@example.org/download to bypass login.

@@ -1,0 +1,1 @@
+Installer stored at ftp://files.bad/downloads/tool.ps1 should run automatically.

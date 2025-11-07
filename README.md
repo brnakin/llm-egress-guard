@@ -2,12 +2,12 @@
 
 Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sanitizes LLM responses before they leave the platform.
 
-Sprint 1 delivers:
-- Repository skeleton aligned with the PRD/TPRD
-- Normalizer v1 (Unicode NFKC, zero-width stripping, bounded HTML unescape)
-- Stubs for parser, detectors, policy, actions, ML, and transports
-- Docker Compose stack (FastAPI + Nginx with self-signed TLS for dev)
-- Initial unit tests for the normalizer
+Sprint 2 now includes:
+- Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.
+- Policy schema with risk-weighted rules, severity tiers, allowlist regex + tenant overrides, and localized safe messages.
+- Action engine that masks/delinks text or returns safe messages when blocking.
+- Prometheus telemetry for pipeline latency, detector latency, rule hits, and severity counters.
+- Regression corpus + golden runner, FastAPI integration tests, and CI automation (Ruff, Black, pytest, regression).
 
 The full specification lives in `llm_egress_guard_repo_skeleton_prd_technical_prd.md`.
 
@@ -49,26 +49,36 @@ The Compose stack builds the FastAPI service and exposes Nginx with dev certific
 ## 3. Tests & Tooling
 
 ```bash
-make test       # pytest (normalizer coverage in Sprint 1)
-make lint       # ruff + black --check
-make format     # black
+make lint                 # ruff + black --check
+pytest tests/unit -q      # unit tests (normalizer + detectors + API)
+python tests/regression/runner.py  # corpus vs. golden outputs
 ```
 
-Regression, bench, and detectors will be fleshed out in subsequent sprints.
+`ci/github-actions.yml` mirrors the same checks on every push/PR.
 
 ## 4. Project Layout
 
 ```text
-app/                 Python package (FastAPI app, pipeline, stubs)
-config/              Default policy + localized safe messages
+app/                 FastAPI app, pipeline, detectors, policy/actions
+config/              Default policy, allowlists, localized safe messages
 nginx/               Dev reverse proxy + self-signed TLS
-tests/               Unit tests (normalizer v1 in Sprint 1)
+tests/               Unit, API, and regression corpora
 docker-compose.yml   Dev stack (FastAPI + Nginx)
 Makefile             Convenience commands wrapping the conda env
 ```
 
-## 5. Next Steps
+## 5. Metrics & Observability
 
-- Implement detectors (PII, secrets, URL, command) per Sprint 2
-- Flesh out policy enforcement and action mutations
-- Expand regression corpus and ML components (later sprints)
+- `/metrics` exposes Prometheus series:
+  - `egress_guard_latency_seconds` (pipeline p50/p95)
+  - `egress_guard_detector_latency_seconds{detector}` for each detector stage
+  - `egress_guard_rule_hits_total{rule_id}` + `egress_guard_rule_severity_total{severity}`
+  - `egress_guard_blocked_total`
+- Structured logs (JSON) include request id, policy, findings, latency, and snippet hashes.
+
+## 6. Next Steps
+
+- Expand regression corpus and ATT&CK-mapped scenarios for future languages/formats (see `tests/regression/README.md`) and begin versioning `golden_v1` snapshots.
+- Implement policy & safe-message hot-reload (cache on timestamp, refresh without restarting) to keep latency stable while enabling runtime updates.
+- Explore context-aware risk downgrades (e.g., “explain only” responses) and ML pre-classifier toggles to soften FP-heavy paths.
+- Integrate SIEM/alert exports and weekly telemetry reports once the ingestion pipeline is stable.

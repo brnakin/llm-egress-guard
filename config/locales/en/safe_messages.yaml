@@ -5,3 +5,9 @@ safe_messages:
   masked:
     title: "Content masked"
     description: "Sensitive details were masked to protect user data."
+  delinked:
+    title: "Dangerous link removed"
+    description: "Potentially risky links were replaced to keep recipients safe."
+  exfil_blocked:
+    title: "Transfer blocked"
+    description: "Large encoded payloads were blocked to prevent data exfiltration."

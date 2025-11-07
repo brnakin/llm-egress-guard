@@ -1,0 +1,1 @@
+Regex, metin içinde desen aramak için kullanılır; örneğin \d sayıları, \w kelime karakterlerini temsil eder. Bu bir açıklamadır, çalıştırılabilir bir komut değildir.

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -21,10 +21,11 @@ class Settings(BaseSettings):
     shadow_mode: bool = Field(default=False, alias="SHADOW_MODE")
     model_version: str = Field(default="0.1.0", alias="MODEL_VERSION")
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
 
     @property
     def policy_path(self) -> Path:

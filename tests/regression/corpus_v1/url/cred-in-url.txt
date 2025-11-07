@@ -1,0 +1,2 @@
+Download at https://user:pass@updates.example.net/install.exe
+; verify checksum after saving.
