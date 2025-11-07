@@ -96,8 +96,6 @@ Sprint 2 delivers the first production-ready detector stack, risk-weighted polic
 
 ## Open Items / Gaps
 
-- **Policy hot-reload**: settings/policy files are still re-read on every request; introduce timestamp-based caching + reload hooks to cut latency and ease ops changes.
-- **Golden versioning**: the new corpus is larger, but `golden_v1.jsonl` snapshots aren’t version-tagged; tracking changes per sprint will help audits and rollbacks.
 - **Context-aware mitigation**: explanatory outputs (e.g., “rm -rf / açıklaması”) are detected but actions are binary; add risk dampening to reduce false positives in guidance scenarios.
 - **SIEM/alert integration**: telemetry is local-only; exporting rule hits/blocks to external monitoring remains open.
 

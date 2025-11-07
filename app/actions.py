@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from functools import lru_cache
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 import yaml
@@ -13,6 +13,8 @@ from app.normalize import NormalizationResult
 from app.policy import PolicyDecision
 
 SAFE_MESSAGES_PATH = Path("config/locales/en/safe_messages.yaml")
+_SAFE_MESSAGES_CACHE: dict[Path, tuple[float, dict[str, dict[str, str]]]] = {}
+_SAFE_MESSAGES_LOCK = RLock()
 
 
 def apply_actions(
@@ -92,18 +94,33 @@ def _render_safe_message(key: str | None) -> str:
     return description or title or "Response blocked due to policy violation."
 
 
-@lru_cache(maxsize=1)
 def _safe_messages() -> dict[str, dict[str, str]]:
+    path = SAFE_MESSAGES_PATH.resolve()
     try:
-        payload = SAFE_MESSAGES_PATH.read_text(encoding="utf-8")
+        mtime = path.stat().st_mtime
     except FileNotFoundError:
+        with _SAFE_MESSAGES_LOCK:
+            _SAFE_MESSAGES_CACHE.pop(path, None)
         return {}
+
+    with _SAFE_MESSAGES_LOCK:
+        cached = _SAFE_MESSAGES_CACHE.get(path)
+        if cached and cached[0] == mtime:
+            return cached[1]
+
+    payload = path.read_text(encoding="utf-8")
     data = yaml.safe_load(payload) or {}
     safe_messages = data.get("safe_messages")
     if not isinstance(safe_messages, dict):
-        return {}
-    return {
-        str(key): value
-        for key, value in safe_messages.items()
-        if isinstance(value, dict)
-    }
+        parsed: dict[str, dict[str, str]] = {}
+    else:
+        parsed = {
+            str(key): value
+            for key, value in safe_messages.items()
+            if isinstance(value, dict)
+        }
+
+    with _SAFE_MESSAGES_LOCK:
+        _SAFE_MESSAGES_CACHE[path] = (mtime, parsed)
+
+    return parsed

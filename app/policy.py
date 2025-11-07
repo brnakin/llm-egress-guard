@@ -7,10 +7,13 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 import re
+from threading import RLock
 
 import yaml
 
 DEFAULT_RULE_WEIGHT = 10
+_POLICY_CACHE: dict[Path, tuple[float, PolicyStore]] = {}
+_POLICY_LOCK = RLock()
 
 
 @dataclass(slots=True)
@@ -195,10 +198,22 @@ def _collect_allowlist_entries(content: dict[str, Any]) -> list[AllowlistEntry]:
     return combined
 
 
-def load_policy(path: Path) -> PolicyStore:
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+def load_policy(path: Path, *, use_cache: bool = True) -> PolicyStore:
+    resolved = path.resolve()
+    try:
+        mtime = resolved.stat().st_mtime
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Policy file {resolved} not found") from exc
+
+    if use_cache:
+        with _POLICY_LOCK:
+            cached = _POLICY_CACHE.get(resolved)
+            if cached and cached[0] == mtime:
+                return cached[1]
+
+    data = yaml.safe_load(resolved.read_text(encoding="utf-8"))
     if data is None:
-        raise ValueError(f"Policy file {path} is empty")
+        raise ValueError(f"Policy file {resolved} is empty")
 
     definitions: dict[str, PolicyDefinition] = {}
 
@@ -230,7 +245,13 @@ def load_policy(path: Path) -> PolicyStore:
             rules=rules,
         )
 
-    return PolicyStore(definitions=definitions)
+    store = PolicyStore(definitions=definitions)
+
+    if use_cache:
+        with _POLICY_LOCK:
+            _POLICY_CACHE[resolved] = (mtime, store)
+
+    return store
 
 
 def select_policy(store: PolicyStore, policy_id: str) -> PolicyDefinition:
@@ -281,3 +302,13 @@ def evaluate(
         applied_rules=applied_rules,
         safe_message_key=safe_message_key,
     )
+
+
+def invalidate_policy_cache(path: Path | None = None) -> None:
+    """Clear cached policy entries (all or a specific file)."""
+
+    with _POLICY_LOCK:
+        if path is None:
+            _POLICY_CACHE.clear()
+        else:
+            _POLICY_CACHE.pop(path.resolve(), None)

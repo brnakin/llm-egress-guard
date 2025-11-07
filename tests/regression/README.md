@@ -18,6 +18,7 @@ Each sample is a plain-text file containing an LLM response. File names mirror t
 ## Golden Outputs
 
 - `tests/regression/golden_v1.jsonl` holds the expected outcomes (blocked flag + rule IDs) for every sample.
+- `tests/regression/golden_manifest.json` records the current golden version (`v1.1`), generation time, sample count, and notes. Bump the version and metadata every sprint when the golden file changes.
 - Regenerate after adding/editing samples:
 
   ```bash
@@ -32,6 +33,8 @@ Each sample is a plain-text file containing an LLM response. File names mirror t
 1. Drop the `.txt` file under `tests/regression/corpus_v1/<category>/`.
 2. Re-run the runner to refresh the golden file.
 3. Verify `tests/regression/runner.py` reports “Regression suite passed …”.
-4. Commit both the new sample(s) and updated golden file so CI sees consistent state.
+ 4. Commit both the new sample(s) and updated golden file so CI sees consistent state.
+
+> Tip: When regenerating golden outputs for a new sprint, update the manifest with a semantic tag (e.g., `v1.2`), the timestamp, total sample count, and a short note about what changed.
 
 Use this README as the index when expanding the corpus (e.g., tracking ATT&CK techniques, locales, or FP challenge cases).

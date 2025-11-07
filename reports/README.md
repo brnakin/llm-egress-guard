@@ -2,6 +2,8 @@
 
 This directory contains sprint reports and project documentation for the LLM Egress Guard project.
 
+> Genel dokümantasyon haritası için [docs/README.md](../docs/README.md) dosyasına göz atabilirsiniz.
+
 ## Contents
 
 - **Sprint-1-Report.md** - Sprint 1 completion report (Oct 17-31, 2025)

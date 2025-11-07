@@ -2,6 +2,8 @@
 
 Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sanitizes LLM responses before they leave the platform.
 
+> 📘 **Doküman Rehberi:** Tüm Markdown dosyalarının hızlı özeti için [docs/README.md](docs/README.md) dosyasına bakabilirsiniz. Normalizasyon güvenlik notları, regresyon korpusu rehberi ve sprint raporları oradan erişilebilir.
+
 Sprint 2 now includes:
 - Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.
 - Policy schema with risk-weighted rules, severity tiers, allowlist regex + tenant overrides, and localized safe messages.
@@ -52,6 +54,7 @@ The Compose stack builds the FastAPI service and exposes Nginx with dev certific
 make lint                 # ruff + black --check
 pytest tests/unit -q      # unit tests (normalizer + detectors + API)
 python tests/regression/runner.py  # corpus vs. golden outputs
+PYTHONPATH=. python scripts/demo_policy_reload.py  # policy hot-reload demo
 ```
 
 `ci/github-actions.yml` mirrors the same checks on every push/PR.
