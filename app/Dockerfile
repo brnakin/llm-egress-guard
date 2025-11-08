@@ -12,6 +12,7 @@ RUN apt-get update \
 COPY pyproject.toml README.md LICENSE ./
 COPY app ./app
 COPY config ./config
+COPY transports ./transports
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .

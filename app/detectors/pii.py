@@ -15,9 +15,7 @@ EMAIL_REGEX = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORE
 IBAN_TR_REGEX = re.compile(r"\bTR\d{2}(?:\s*\d{4}){5}\s*\d{2}\b", re.IGNORECASE)
 IBAN_DE_REGEX = re.compile(r"\bDE\d{2}(?:\s*\d{4}){4}\s*\d{2}\b", re.IGNORECASE)
 TCKN_REGEX = re.compile(r"\b\d{11}\b")
-PAN_REGEX = re.compile(
-    r"\b(?:4\d{12}(?:\d{3})?|5[1-5]\d{14}|3[47]\d{13}|6(?:011|5\d{2})\d{12})\b"
-)
+PAN_REGEX = re.compile(r"(?<!\d)(?:[3456]\d[\s-]?)(?:\d[\s-]?){12,18}(?!\d)")
 IPV4_REGEX = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b")
 
 PHONE_PATTERNS: dict[str, re.Pattern[str]] = {
@@ -143,15 +141,18 @@ def _scan_pan(text: str) -> list[tuple[str, tuple[int, int], dict[str, Any]]]:
     results: list[tuple[str, tuple[int, int], dict[str, Any]]] = []
     for match in PAN_REGEX.finditer(text):
         candidate = match.group(0)
-        if not _passes_luhn(candidate):
+        digits_only = re.sub(r"[^\d]", "", candidate)
+        if len(digits_only) < 13 or len(digits_only) > 19:
             continue
-        masked = f"**** **** **** {candidate[-4:]}"
+        if not _passes_luhn(digits_only):
+            continue
+        masked = f"**** **** **** {digits_only[-4:]}"
         detail = {
             "masked": masked,
             "replacement": masked,
             "preview": masked,
         }
-        results.append((candidate, match.span(), detail))
+        results.append((match.group(0), match.span(), detail))
     return results
 
 

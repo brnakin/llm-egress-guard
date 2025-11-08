@@ -44,6 +44,10 @@ target-version = ["py311"]
 line-length = 100
 src = ["app", "tests"]
 
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["config"]
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N"]
 
