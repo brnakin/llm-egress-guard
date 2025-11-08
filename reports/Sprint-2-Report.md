@@ -45,9 +45,10 @@ Sprint 2 delivers the first production-ready detector stack, risk-weighted polic
    - `app/metrics.py` adds per-detector latency histogram and rule severity counters. `/metrics` now exposes pipeline p50/p95, blocked totals, rule hits, and severity tallies for dashboards.
 
 4. **Testing & Tooling**
-   - `tests/unit/test_detectors.py` expanded to cover new detector types; `tests/unit/test_api.py` validates FastAPI behavior (mask, block, delink scenarios).
-   - Regression suite (`tests/regression/corpus_v1`) now holds ~60 labeled samples (PII, secrets, URL, CMD, Exfil, clean). `tests/regression/runner.py` compares results with `golden_v1.jsonl`.
-   - CI workflow (`ci/github-actions.yml`) runs Ruff, Black, pytest, and regression runner on every push/PR.
+   - `tests/unit/test_detectors.py` expanded to cover new detector types; `tests/unit/test_api.py` + `tests/unit/test_ci_demo.py` validate FastAPI behavior and CI smoke scenarios (secret block + PAN block).
+   - Regression suite (`tests/regression/corpus_v1`) now holds 87 labeled samples (clean, PII, secrets, URL, CMD, Exfil). `tests/regression/runner.py` renders placeholder markers into deterministic synthetic secrets before comparing results with `golden_v1.jsonl`; `golden_manifest.json` tracks version/tag/time metadata.
+   - Detector matrix harness (`tests/regression/detector_matrix.py` + `runner.py --matrix-report`) produces JSON + Markdown analyst notes for demos and SOC onboarding; artifacts land in `tests/regression/artifacts/`.
+   - CI workflow (`ci/github-actions.yml`) runs Ruff, Black, pytest, regression runner, and enforces the placeholder-only corpus so GitHub push protection never sees real-looking keys.
 
 ---
 
@@ -58,15 +59,17 @@ Sprint 2 delivers the first production-ready detector stack, risk-weighted polic
 | Missing temp directory in sandbox | Pytest couldn’t create temp files in some environments | Runner now honours `TMPDIR`, docs mention workaround |
 | Policy weight ambiguity | `weight` vs. `risk_weight` naming caused confusion | Unified on `risk_weight`, updated loaders + YAML |
 | Secrets preview leaking data | Early preview strings showed partial secrets | All secrets/exfil previews replaced with placeholders |
+| Push protection blocks due to sample corpus | GitHub detected synthetic keys as real secrets | Introduced placeholder markers + runtime generators and rewrote history so the repo never stores literal-looking secrets |
 
 ---
 
 ## Testing & Quality
 
-- `pytest` (unit + API): 100% pass (52 tests).  
-- `tests/regression/runner.py`: all corpus samples match golden expectations.  
+- `pytest` (unit + API/CI demos): 100% pass (52 tests).  
+- `tests/regression/runner.py`: all 87 corpus samples (after placeholder rendering) match `golden_v1`.  
+- `python tests/regression/runner.py --matrix-report` exports JSON + Markdown detector matrix for SOC review; artifacts excluded via `.gitignore`.  
 - `ruff check app tests` & `black --check app tests`: pass.  
-- FastAPI integration tests validate masking, blocking (JWT), and delinking flows.
+- FastAPI integration tests validate masking, blocking (JWT), delinking flows, and CI demo scenarios.
 
 ---
 

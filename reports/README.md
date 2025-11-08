@@ -12,6 +12,10 @@ This directory contains sprint reports and project documentation for the LLM Egr
   - Test results
   - Issues resolved
   - Performance metrics
+- **Sprint-2-Report.md** - Sprint 2 completion report (Nov 1-14, 2025)
+  - Detector/Policy/Telemetry GA scope
+  - Regression corpus, placeholder templating, detector matrix tooling
+  - CI, metrics, and open items for Sprint 3
 
 ## Report Format
 

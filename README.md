@@ -10,6 +10,8 @@ Sprint 2 now includes:
 - Action engine that masks/delinks text or returns safe messages when blocking.
 - Prometheus telemetry for pipeline latency, detector latency, rule hits, and severity counters.
 - Regression corpus + golden runner, FastAPI integration tests, and CI automation (Ruff, Black, pytest, regression).
+- Synthetic secret placeholder system (`tests/regression/placeholders.py`) so the repo never stores real-looking keys while detectors still receive realistic payloads.
+- Detector matrix harness (`tests/regression/detector_matrix.py`) that produces JSON + analyst Markdown for demos via a single command.
 
 The full specification lives in `llm_egress_guard_repo_skeleton_prd_technical_prd.md`.
 
@@ -51,11 +53,15 @@ The Compose stack builds the FastAPI service and exposes Nginx with dev certific
 ## 3. Tests & Tooling
 
 ```bash
-make lint                 # ruff + black --check
-pytest tests/unit -q      # unit tests (normalizer + detectors + API)
-python tests/regression/runner.py  # corpus vs. golden outputs
+make lint                     # ruff + black --check
+pytest tests/unit -q          # unit tests (normalizer + detectors + API)
+python tests/regression/runner.py           # corpus vs. golden outputs
+python tests/regression/runner.py --matrix-report  # detector matrix JSON + Markdown
 PYTHONPATH=. python scripts/demo_policy_reload.py  # policy hot-reload demo
 ```
+
+- Regression runner automatically renders placeholder markers (e.g., `{{STRIPE_KEY}}`, `{{JWT_SAMPLE_TOKEN}}`) into deterministic synthetic secrets before invoking the pipeline.
+- The `--matrix-report` flag saves demo responses under `tests/regression/artifacts/` for SOC runbooks; the directory is gitignored by default.
 
 `ci/github-actions.yml` mirrors the same checks on every push/PR.
 
