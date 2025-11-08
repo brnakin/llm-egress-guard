@@ -17,5 +17,7 @@ dist/
 .coverage
 .pytest_cache/
 .cache/
+# Generated regression artifacts
+tests/regression/artifacts/
 # TLS dev certs kept under version control
 !.gitignore

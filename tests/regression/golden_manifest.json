@@ -1,6 +1,6 @@
 {
-  "version": "v1.2",
-  "generated_at": "2025-11-07T20:09:00Z",
+  "version": "v1.3",
+  "generated_at": "2025-11-08T02:31:25Z",
   "samples": 87,
-  "notes": "Sprint 2 final: policy hot-reload demo + golden manifest tracking."
+  "notes": "PAN detector spacing fix, detector matrix automation, and templated secret samples."
 }

@@ -37,4 +37,19 @@ Each sample is a plain-text file containing an LLM response. File names mirror t
 
 > Tip: When regenerating golden outputs for a new sprint, update the manifest with a semantic tag (e.g., `v1.2`), the timestamp, total sample count, and a short note about what changed.
 
+### Synthetic Secret Placeholders
+
+- Secrets dosyaları gerçekçi görünümlü placeholder’lar (`{{STRIPE_KEY}}`, `{{AWS_SECRET_KEY}}` vb.) içerir.
+- `tests/regression/placeholders.py` bu marker’ları runtime’da gerçekçi değerlerle değiştirir; repo içinde riskli literal saklanmaz.
+- Yeni bir secret türü eklerken önce placeholder’ı dosyada kullanın, ardından aynı isimle `placeholders.py` içinde üretici fonksiyon tanımlayın.
+- Runner ve detector matrix otomatik olarak placeholder’ları uygular; harici script yazıyorsanız `from tests.regression.placeholders import apply_placeholders` çağırın.
+
+## Detector Matrix Report
+
+`python tests/regression/runner.py --matrix-report`
+
+- Çeşitli kategoriler için hazırlanmış demo senaryolarını pipeline üzerinden çalıştırır.
+- Sonuçlar `tests/regression/artifacts/detector_matrix_results.json` (ham JSON) ve `tests/regression/artifacts/detector_matrix_analysis.md` (analist stili özet tablo) dosyalarına yazılır.
+- Demo, SIEM/analist eğitimlerinde kullanılmak üzere tüm dedektör tetiklemelerini tek komutta toplamanızı sağlar.
+
 Use this README as the index when expanding the corpus (e.g., tracking ATT&CK techniques, locales, or FP challenge cases).

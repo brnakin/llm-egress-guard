@@ -38,7 +38,7 @@
 {"sample": "pii/iban_tr.txt", "blocked": false, "rule_ids": []}
 {"sample": "pii/ipv4.txt", "blocked": false, "rule_ids": ["PII-IPV4"]}
 {"sample": "pii/mixed-ip-bilingual.txt", "blocked": false, "rule_ids": ["PII-IPV4", "PII-IPV4"]}
-{"sample": "pii/pan-spaced.txt", "blocked": false, "rule_ids": []}
+{"sample": "pii/pan-spaced.txt", "blocked": true, "rule_ids": ["PII-PAN"]}
 {"sample": "pii/pan.txt", "blocked": true, "rule_ids": ["PII-PAN"]}
 {"sample": "pii/phone_de.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN"]}
 {"sample": "pii/phone_en.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN"]}
