@@ -33,7 +33,8 @@ egress-guard/
 │  │  ├─ pii.py                 # email, phone, IBAN (TR/DE), TCKN simple check
 │  │  ├─ secrets.py             # JWT, AKIA, sk-*, entropy-based tokens
 │  │  ├─ url.py                 # IP URLs, data: scheme, risky extensions
-│  │  └─ cmd.py                 # curl|bash, Invoke-WebRequest, powershell -enc, rm -rf, reg add
+│  │  ├─ cmd.py                 # curl|bash, Invoke-WebRequest, powershell -enc, rm -rf, reg add
+│  │  └─ exfil.py               # base64/hex blob detector with entropy thresholds
 │  ├─ ml/
 │  │  ├─ preclassifier.py       # TF-IDF + Logistic Regression (code/command vs text)
 │  │  ├─ validator_spacy.py     # optional NER validator (email/phone/person)
@@ -58,9 +59,15 @@ egress-guard/
 │  │  │  ├─ pii/*.txt
 │  │  │  ├─ secrets/*.txt
 │  │  │  ├─ url/*.txt
-│  │  │  └─ cmd/*.txt
+│  │  │  ├─ cmd/*.txt
+│  │  │  └─ exfil/*.txt
+│  │  ├─ README.md              # corpus guide + placeholder workflow
 │  │  ├─ golden_v1.jsonl        # expected outcomes for corpus_v1
-│  │  └─ runner.py              # compare outputs vs golden
+│  │  ├─ golden_manifest.json   # version metadata for golden files
+│  │  ├─ placeholders.py        # synthetic secret generators ({{TOKEN}} markers)
+│  │  ├─ detector_matrix.py     # scripted scenarios for demos
+│  │  ├─ artifacts/             # generated JSON/Markdown reports (gitignored)
+│  │  └─ runner.py              # compare outputs vs golden + matrix reports
 │  └─ ml/
 │     ├─ data/
 │     │  ├─ preclf_train.jsonl
@@ -143,10 +150,10 @@ server {
 
 ### 2.2 Goals / Non-Goals
 **Goals**
-- G1: Stop or neutralize risky content in LLM outputs with **deterministic policy**.
+- G1: Stop or neutralize risky content in LLM outputs with **deterministic policy** (PII, Secrets, URL, CMD, Exfil/high entropy).
 - G2: Provide **low-latency** (p95 < 40 ms for 1–3K chars) decisions.
-- G3: Offer clear **audit logs** and minimal PII exposure (snippet hashing, masking only).
-- G4: Include **light ML** (pre-classifier; optional NER validator) to cut false positives.
+- G3: Offer clear **audit logs** and minimal PII exposure (snippet hashing, masking only); when regression samples require realistic tokens, use placeholder markers rendered at runtime.
+- G4: Include **light ML** (pre-classifier; optional NER validator) to cut false positives and enable context-aware risk tuning.
 - G5: Simple **/guard** API usable by any LLM app (RAG, chat, agent).
 
 **Non-Goals (MVP)**
@@ -165,18 +172,18 @@ Use cases: PII masking, secret blocking, dangerous command/URL defanging, policy
 
 ### 2.4 Scope (MVP)
 - Pipeline: normalize → parse → detect → decide → act → log
-- Detectors: PII, Secrets, URL Risk, Command
+- Detectors: PII, Secrets, URL Risk, Command, Exfil/high entropy blobs
 - Policy: YAML (tiers, allowlist/denylist, rule ids, thresholds, actions)
 - API: `POST /guard` (sync). Healthz, metrics.
 - Telemetry: p50/p95, rule hits, basic risk score.
-- Tests: ≥150 samples; regression harness.
+- Tests: ≥150 samples; regression harness with placeholder templating + detector matrix demo.
 
 ### 2.5 Success Metrics & KPIs (Student Project Targets)
-- **Detection (guidance):** Catch rate **80–90%** on your corpus; False Positive rate **≤ 10%** (improve over time)
+- **Detection (guidance):** Catch rate **80–90%** on your corpus (PII/Secrets/URL/CMD/Exfil); False Positive rate **≤ 10%** (improve over time)
 - **Performance (guidance):** Aim for median < **40 ms**, p95 < **80 ms** on 1–3K chars (single vCPU); document actuals
-- **Privacy (required):** No raw secrets/PII in logs; only masked text + `snippet_hash`
+- **Privacy (required):** No raw secrets/PII in logs; only masked text + `snippet_hash`. Regression fixtures must use placeholder markers (`{{TOKEN}}`) rendered at runtime so the repo never stores literal secrets.
 - **Observability (minimal):** p50/p95 latency and rule‑hit counts available (CLI or simple dashboard)
-- **Testing (minimal):** ≥ **100** labeled samples and a simple regression runner
+- **Testing (minimal):** ≥ **100** labeled samples, golden manifest, placeholder renderer, and a detector-matrix script for demos.
 
 ### 2.6 Release Plan
 - 12-week plan in 2-week sprints (see TPRD sprints).  
@@ -184,18 +191,18 @@ Use cases: PII masking, secret blocking, dangerous command/URL defanging, policy
 - **Streaming** reserved for **v0.3.x** (post-MVP).
 
 ### 2.7 Risks & Mitigations (PRD)
-- High FP → Policy tiers + ML pre-classifier + validator + format-aware.
+- High FP → Policy tiers + ML pre-classifier + validator + format-aware; detector matrix reviews highlight FP sources.
 - Latency drift → Short-circuit, bounded decode, linear-time regex.
-- Privacy → No raw snippets in logs; only hashes + masked samples.
-- Operational → Dockerized, restart policy, health checks.
+- Privacy → No raw snippets in logs; only hashes + masked samples. Regression samples rely on placeholder templating to keep repo secret-free while still exercising detectors.
+- Operational → Dockerized, restart policy, health checks; GitHub push protection enforced via placeholder corpus + golden manifest process.
 
 ### 2.8 Acceptance Criteria (PRD — Student Scope)
-- Core pipeline works end‑to‑end: normalize → detect (4 detectors) → decide → act → log
+- Core pipeline works end‑to‑end: normalize → detect (PII/Secrets/URL/CMD/Exfil) → decide → act → log
 - Policy YAML controls behavior (tiers, allowlist) and is reloadable without rebuild
-- Demonstrate **3 scenarios**: (1) email mask, (2) JWT block, (3) `curl|bash` block + safe message
+- Demonstrate **4 scenarios**: (1) email mask, (2) JWT block, (3) `curl|bash` block + safe message, (4) base64/hex exfil block with snippet hashing
 - Basic metrics visible (p50/p95, rule hits); latency within **reasonable** bounds for demo (< ~80 ms p95 preferred; if higher, documented)
-- Regression suite runs and passes **must‑have** cases (≥ **80%** pass rate initially; improvements noted)
-- Logs contain no raw sensitive content
+- Regression suite runs and passes **must‑have** cases (≥ **80%** pass rate initially; improvements noted) using placeholder-marked corpus and detector matrix demo.
+- Logs contain no raw sensitive content; snippet hashes + placeholders ensure reproducible investigations without storing secrets.
 - Manual deployment documented (README) with `docker compose up -d`
 
 ---
@@ -324,7 +331,7 @@ rules:
 - **Post-MVP (optional):** add GitHub Actions for lint → unit → regression → build image → image scan → notify. Enable when team/scale requires automation.
 
 ### 3.11 Roadmap (post-MVP)
-- **v0.2.x:** Format-aware parser v1 (markdown/code/link), NER validator (multi-lang PII), SIEM connector templates (KQL/SPL) **and Weekly Report automation**, plus regional PII packs (TR/EN/DE)
+- **v0.2.x:** Format-aware parser v1 (markdown/code/link), NER validator (multi-lang PII), SIEM connector/webhook exporters (KQL/SPL templates, alert runbooks) **and Weekly Report automation**
 - **v0.3.x:** Streaming (chunk API): `chunk_id`, `final_chunk`, `partial_findings`; progressive actions (delink → mask → block)
 - **Hybrid Option:** Keep sync path on Lambda + HTTP API; add separate streaming endpoint on EC2 (path or subdomain)
 
@@ -336,12 +343,27 @@ rules:
 - **Sprint 5 (Dec 12–Dec 25):** Corpus v2 + regression runner, CI wiring (format-aware moved post-MVP)
 - **Sprint 6 (Dec 26–Jan 8):** Tuning, risk score v1, report & demo scenarios (weekly report moved post-MVP)
 
-### 3.13 Acceptance (TPRD — Student Scope)
-- Functional: `/guard`, `/healthz`, `/metrics` behave as specified; actions mask/delink/block applied correctly
-- Performance: single‑vCPU dev box achieves **documented** median and p95; any deviations explained with profiling notes
-- Quality: unit tests for normalizer/detectors/actions; regression runner over ≥100 samples
-- ML (if enabled): pre‑classifier integrated behind a feature flag; adds ≤ ~5 ms median (measured)
-- Security/Privacy: TLS via Nginx; RO policy mount; error path returns safe message; no raw sensitive logs
-- Demo package: 3 scenario scripts + screenshots or short clip; README with run, test, and policy‑tuning steps
+### 3.13 Open Backlog After Sprint 2
+- **Parser + ML validator**  
+  - *Goal:* honor the promise for Sprint 3+ by making detections format-aware and double-checking regex PII hits with an ML validator.  
+  - *Work:* ship the Markdown/code-block parser that splits inputs into `text`, `code`, `link`, and `table` segments so detectors can apply context (e.g., treat fenced shell blocks differently than prose); update detectors to consume `segment.context` and skip benign code comments where policy allows. Package an optional spaCy NER pipeline (multi-lang) that re-validates regex PII hits before block/mask actions and emits disagreements for analyst review.  
+  - *Dependencies:* spaCy model layer in Docker image, caching to amortize model load, regression artifacts that carry segment metadata, and feature flags so ML validation can be toggled per-tenant.  
+  - *Exit criteria:* parser coverage across Markdown/code regression samples, spaCy validator agreement rate ≥95% on PII corpus, detector matrix report highlights reduced false positives with no drop in secret detection.
+
+#### 3.13.1 Ticket-Sized Breakdown (Sprint 2 Carryover)
+- **Epic — Parser + ML validator**
+  - `PAR-301 Markdown/Code Parser` — Build parser that outputs structured segments with context metadata, update detectors to accept segments, and add regression fixtures containing mixed markdown/code. *Done when:* detector matrix shows context-aware suppression for benign examples.
+  - `PAR-302 spaCy Validator Integration` — Package spaCy model (lazy load/cache), cross-check regex PII hits, and expose disagreement telemetry. *Done when:* validator toggle proves ≥95% agreement on PII corpus and disagreement samples stored for analysts.
+  - `PAR-303 Feature Flags & Ops Docs` — Add per-tenant switches for parser/validator, extend Docker image/runtime docs with model sizing, and define rollback/testing checklist. *Done when:* README + ops runbook explain how to enable/disable features safely.
+
+**Pull Order Guidance:** focus on PAR-301→303 sequence; remaining parser tasks stay in the open backlog until capacity is freed.
+
+### 3.14 Acceptance (TPRD — Student Scope)
+- Functional: `/guard`, `/healthz`, `/metrics` behave as specified; actions mask/delink/block applied correctly across PII/Secrets/URL/CMD/Exfil.
+- Performance: single‑vCPU dev box achieves **documented** median and p95; any deviations explained with profiling notes.
+- Quality: unit tests for normalizer/detectors/actions; regression runner over ≥100 samples plus detector matrix demo and placeholder templating.
+- ML (if enabled): pre‑classifier integrated behind a feature flag; adds ≤ ~5 ms median (measured).
+- Security/Privacy: TLS via Nginx; RO policy mount; error path returns safe message; no raw sensitive logs, regression corpus uses placeholders so repo stays secret-free.
+- Demo package: ≥4 scenario scripts (PII mask, JWT block, curl|bash block, exfil block) + screenshots or short clip; README with run, test, policy-tuning, and placeholder instructions.
 
 **End of Document**

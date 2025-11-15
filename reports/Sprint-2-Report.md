@@ -97,11 +97,6 @@ Sprint 2 delivers the first production-ready detector stack, risk-weighted polic
 3. Build export tooling for SIEM / weekly reports and integrate /metrics with dashboards.
 4. Plan Sprint 3 focus on parser/context and optional ML validator.
 
-## Open Items / Gaps
-
-- **Context-aware mitigation**: explanatory outputs (e.g., “rm -rf / açıklaması”) are detected but actions are binary; add risk dampening to reduce false positives in guidance scenarios.
-- **SIEM/alert integration**: telemetry is local-only; exporting rule hits/blocks to external monitoring remains open.
-
 ---
 
 **Sprint 2 Status:** ✅ Complete — detectors, policy, telemetry, regression, and CI ready for demo.
