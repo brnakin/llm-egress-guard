@@ -2,7 +2,9 @@
 
 Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sanitizes LLM responses before they leave the platform.
 
-> 📘 **Doküman Rehberi:** Tüm Markdown dosyalarının hızlı özeti için [docs/README.md](docs/README.md) dosyasına bakabilirsiniz. Normalizasyon güvenlik notları, regresyon korpusu rehberi ve sprint raporları oradan erişilebilir.
+> 📘 **Documentation Guide:** For a quick index of every Markdown file, see [docs/README.md](docs/README.md). It links to the normalization security notes, regression corpus guide, and sprint reports.
+>
+> 🗂 **Sprint Reports:** Each sprint ships Markdown, PDF, and DOCX copies under `reports/` (`Sprint-*-Report.{md,pdf,docx}`).
 
 Sprint 2 now includes:
 - Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.

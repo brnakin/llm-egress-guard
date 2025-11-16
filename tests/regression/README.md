@@ -39,17 +39,17 @@ Each sample is a plain-text file containing an LLM response. File names mirror t
 
 ### Synthetic Secret Placeholders
 
-- Secrets dosyaları gerçekçi görünümlü placeholder’lar (`{{STRIPE_KEY}}`, `{{AWS_SECRET_KEY}}` vb.) içerir.
-- `tests/regression/placeholders.py` bu marker’ları runtime’da gerçekçi değerlerle değiştirir; repo içinde riskli literal saklanmaz.
-- Yeni bir secret türü eklerken önce placeholder’ı dosyada kullanın, ardından aynı isimle `placeholders.py` içinde üretici fonksiyon tanımlayın.
-- Runner ve detector matrix otomatik olarak placeholder’ları uygular; harici script yazıyorsanız `from tests.regression.placeholders import apply_placeholders` çağırın.
+- Secret files only store realistic-looking placeholder markers (`{{STRIPE_KEY}}`, `{{AWS_SECRET_KEY}}`, etc.).
+- `tests/regression/placeholders.py` expands those markers into deterministic synthetic values at runtime so no risky literals ever live in git.
+- When adding a new secret type, use its placeholder in the corpus file first, then implement the generator with the same name in `placeholders.py`.
+- Both the runner and detector matrix scripts apply placeholders automatically; external scripts should call `from tests.regression.placeholders import apply_placeholders`.
 
 ## Detector Matrix Report
 
 `python tests/regression/runner.py --matrix-report`
 
-- Çeşitli kategoriler için hazırlanmış demo senaryolarını pipeline üzerinden çalıştırır.
-- Sonuçlar `tests/regression/artifacts/detector_matrix_results.json` (ham JSON) ve `tests/regression/artifacts/detector_matrix_analysis.md` (analist stili özet tablo) dosyalarına yazılır.
-- Demo, SIEM/analist eğitimlerinde kullanılmak üzere tüm dedektör tetiklemelerini tek komutta toplamanızı sağlar.
+- Runs curated demo scenarios across detectors via the pipeline.
+- Saves raw JSON to `tests/regression/artifacts/detector_matrix_results.json` and analyst-style Markdown to `tests/regression/artifacts/detector_matrix_analysis.md`.
+- Handy for SOC/analyst training to showcase every detector hit in one command.
 
 Use this README as the index when expanding the corpus (e.g., tracking ATT&CK techniques, locales, or FP challenge cases).

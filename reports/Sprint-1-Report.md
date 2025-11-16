@@ -1,5 +1,7 @@
 # Sprint 1 Completion Report: LLM Egress Guard
 
+> PDF/DOCX versions live in `reports/Sprint-1-Report.pdf` and `reports/Sprint-1-Report.docx`.
+
 **Project:** LLM Egress Guard - Data Loss Prevention for LLM Outputs  
 **Sprint:** Sprint 1 (October 17 - October 31, 2025)  
 **Status:** [COMPLETE]  
@@ -532,4 +534,3 @@ All code is production-quality, well-tested, and fully documented. The security 
 **Next Sprint: Ready to begin Sprint 2 - Detector Implementation**
 
 ---
-
