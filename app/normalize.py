@@ -28,6 +28,7 @@ _ALLOWED_CONTROL_CHARS: tuple[str, ...] = ("\n", "\r", "\t")
 # Regex to count HTML entities (named and numeric)
 _HTML_ENTITY_PATTERN = re.compile(r"&(?:[a-zA-Z]+|#x?[0-9a-fA-F]+);")
 
+
 # Time budget for normalization (in seconds)
 _TIME_BUDGET_SECONDS = 0.1
 
@@ -52,37 +53,35 @@ def _count_html_entities(value: str) -> int:
 
 def _safe_url_decode(value: str, *, max_passes: int = 2) -> tuple[str, bool, list[str]]:
     """URL decode with protection against excessive nested encoding.
-    
+
     Args:
         value: Input string
         max_passes: Maximum number of decode passes (default 2 for double encoding)
-    
+
     Returns:
         Tuple of (decoded_string, was_modified, anomalies)
     """
     anomalies: list[str] = []
     original = value
     passes = 0
-    
+
     while passes < max_passes:
         try:
             decoded = urllib.parse.unquote(value)
         except Exception as e:
-            LOGGER.warning(
-                "url_decode_failed", extra={"error": str(e), "length": len(value)}
-            )
+            LOGGER.warning("url_decode_failed", extra={"error": str(e), "length": len(value)})
             anomalies.append(f"url_decode_error: {type(e).__name__}")
             break
-        
+
         if decoded == value:
             break
-        
+
         value = decoded
         passes += 1
-    
+
     if passes >= max_passes:
         anomalies.append("url_decode_max_passes_reached")
-    
+
     return value, value != original, anomalies
 
 
@@ -90,19 +89,19 @@ def _html_unescape_known_entities(
     value: str, *, max_entities: int, max_output_length: int
 ) -> tuple[str, bool, list[str]]:
     """HTML unescape with limits on entity count and output length.
-    
+
     Only processes standard named and numeric entities. Invalid entities are left unchanged.
-    
+
     Args:
         value: Input string
         max_entities: Maximum number of entities to process
         max_output_length: Maximum output length
-    
+
     Returns:
         Tuple of (unescaped_string, was_modified, anomalies)
     """
     anomalies: list[str] = []
-    
+
     entity_count = _count_html_entities(value)
     if entity_count > max_entities:
         anomalies.append(f"html_entity_count_exceeded: {entity_count} > {max_entities}")
@@ -116,16 +115,14 @@ def _html_unescape_known_entities(
             },
         )
         return value, False, anomalies
-    
+
     try:
         unescaped = html.unescape(value)
     except Exception as e:
-        LOGGER.warning(
-            "html_unescape_failed", extra={"error": str(e), "length": len(value)}
-        )
+        LOGGER.warning("html_unescape_failed", extra={"error": str(e), "length": len(value)})
         anomalies.append(f"html_unescape_error: {type(e).__name__}")
         return value, False, anomalies
-    
+
     if len(unescaped) > max_output_length:
         anomalies.append(f"html_output_length_exceeded: {len(unescaped)} > {max_output_length}")
         LOGGER.warning(
@@ -137,7 +134,7 @@ def _html_unescape_known_entities(
             },
         )
         return value, False, anomalies
-    
+
     # Detect potential double encoding by checking if result still contains entities
     if unescaped != value:
         remaining_entities = _count_html_entities(unescaped)
@@ -150,7 +147,7 @@ def _html_unescape_known_entities(
                     "remaining_entities": remaining_entities,
                 },
             )
-    
+
     return unescaped, unescaped != value, anomalies
 
 
@@ -175,6 +172,22 @@ def _strip_control_characters(value: str) -> tuple[str, bool]:
         result_chars.append(char)
     result = "".join(result_chars)
     return result, mutated
+
+
+_OBFUSCATION_AT_PATTERN = re.compile(r"(?i)(?:\[(?:at)\]|\((?:at)\)|\{(?:at)\}|\bat\b)")
+_OBFUSCATION_DOT_PATTERN = re.compile(r"(?i)(?:\[(?:dot)\]|\((?:dot)\)|\{(?:dot)\}|\bdot\b)")
+
+
+def _expand_obfuscations(value: str) -> tuple[str, bool]:
+    original = value
+    value = _OBFUSCATION_AT_PATTERN.sub("@", value)
+    value = _OBFUSCATION_DOT_PATTERN.sub(".", value)
+    # remove stray spaces around @ or .
+    value = re.sub(r"\s*(?=@)", "", value)
+    value = re.sub(r"(?<=@)\s+", "", value)
+    value = re.sub(r"\s*(?=\.)", "", value)
+    value = re.sub(r"(?<=\.)\s+", "", value)
+    return value, value != original
 
 
 def normalize_text(value: str | None, *, max_unescape: int = 1000) -> NormalizationResult:
@@ -240,12 +253,17 @@ def normalize_text(value: str | None, *, max_unescape: int = 1000) -> Normalizat
         steps.append("nfkc")
     value = normalized
 
-    # Step 4: Strip zero-width characters
+    # Step 4: Map homoglyphs and expand obfuscations
+    value, mutated = _expand_obfuscations(value)
+    if mutated:
+        steps.append("expand_obfuscation")
+
+    # Step 5: Strip zero-width characters
     value, mutated = _strip_zero_width_characters(value)
     if mutated:
         steps.append("strip_zero_width")
 
-    # Step 5: Strip control characters
+    # Step 6: Strip control characters
     value, mutated = _strip_control_characters(value)
     if mutated:
         steps.append("strip_control")

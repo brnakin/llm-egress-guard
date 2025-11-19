@@ -343,22 +343,7 @@ rules:
 - **Sprint 5 (Dec 12–Dec 25):** Corpus v2 + regression runner, CI wiring (format-aware moved post-MVP)
 - **Sprint 6 (Dec 26–Jan 8):** Tuning, risk score v1, report & demo scenarios (weekly report moved post-MVP)
 
-### 3.13 Open Backlog After Sprint 2
-- **Parser + ML validator**  
-  - *Goal:* honor the promise for Sprint 3+ by making detections format-aware and double-checking regex PII hits with an ML validator.  
-  - *Work:* ship the Markdown/code-block parser that splits inputs into `text`, `code`, `link`, and `table` segments so detectors can apply context (e.g., treat fenced shell blocks differently than prose); update detectors to consume `segment.context` and skip benign code comments where policy allows. Package an optional spaCy NER pipeline (multi-lang) that re-validates regex PII hits before block/mask actions and emits disagreements for analyst review.  
-  - *Dependencies:* spaCy model layer in Docker image, caching to amortize model load, regression artifacts that carry segment metadata, and feature flags so ML validation can be toggled per-tenant.  
-  - *Exit criteria:* parser coverage across Markdown/code regression samples, spaCy validator agreement rate ≥95% on PII corpus, detector matrix report highlights reduced false positives with no drop in secret detection.
-
-#### 3.13.1 Ticket-Sized Breakdown (Sprint 2 Carryover)
-- **Epic — Parser + ML validator**
-  - `PAR-301 Markdown/Code Parser` — Build parser that outputs structured segments with context metadata, update detectors to accept segments, and add regression fixtures containing mixed markdown/code. *Done when:* detector matrix shows context-aware suppression for benign examples.
-  - `PAR-302 spaCy Validator Integration` — Package spaCy model (lazy load/cache), cross-check regex PII hits, and expose disagreement telemetry. *Done when:* validator toggle proves ≥95% agreement on PII corpus and disagreement samples stored for analysts.
-  - `PAR-303 Feature Flags & Ops Docs` — Add per-tenant switches for parser/validator, extend Docker image/runtime docs with model sizing, and define rollback/testing checklist. *Done when:* README + ops runbook explain how to enable/disable features safely.
-
-**Pull Order Guidance:** focus on PAR-301→303 sequence; remaining parser tasks stay in the open backlog until capacity is freed.
-
-### 3.14 Acceptance (TPRD — Student Scope)
+### 3.13 Acceptance (TPRD — Student Scope)
 - Functional: `/guard`, `/healthz`, `/metrics` behave as specified; actions mask/delink/block applied correctly across PII/Secrets/URL/CMD/Exfil.
 - Performance: single‑vCPU dev box achieves **documented** median and p95; any deviations explained with profiling notes.
 - Quality: unit tests for normalizer/detectors/actions; regression runner over ≥100 samples plus detector matrix demo and placeholder templating.
