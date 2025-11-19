@@ -2,14 +2,6 @@
 
 These notes summarize how we plan to finish the Sprint 2 carryover work and highlight the gaps that must be closed before the next demo.
 
-> Security and engineering reviewers validated the current state of the guard and produced the baseline summarized below. Treat these notes as the authoritative planning artifact for Sprint 3 and beyond.
-
-## Security Review Snapshot
-- **Maturity:** The MVP is verified as stable with hardened normalization, deterministic testing, and telemetry. We are officially exiting Sprint 2 with a working guard.
-- **Critical bottlenecks:** Context-Aware Parsing (`app/parser.py`) and Performance scaling (`app/pipeline.py`) must be addressed immediately to keep false positives down and latency predictable.
-- **Roadmap impact:** Reorder the backlog so Context-Aware Parsing lands in Sprint 3, the ML Pre-classifier (`app/ml/preclassifier.py`) in Sprint 4, and defer secondary initiatives until those are complete.
-- **Baseline:** This review is signed off by security engineering and should be referenced for design justifications, demos, and stakeholder updates.
-
 ## Context-Aware Parser Segmentation
 - The parser module is still a stub; we need it to emit `text/code/link/table` segments so command and PII detectors can apply context penalties or bonuses.
 - It should build on the normalized text and emit metadata that the regression runner can persist for analysis.
@@ -89,9 +81,9 @@ Sprint focus: clearing context-aware tuning plus telemetry bus first unlocks ML 
 
 ---
 
-## Executive Summary (Security Review)
+## Executive Summary
 You have built a solid, security-first MVP foundation. The project maturity is surprisingly high for an early-stage tool, particularly regarding normalization security and deterministic testing. You are effectively at the "Sprint 2 Complete" stage as documented, with a working pipeline, robust regex-based detection, and telemetry.
-However, to claim "Production Readiness" or handle real-world LLM traffic, you have two critical engineering bottlenecks to address: Context-Awareness (the parser is a stub) and Performance Scaling (linear regex execution). This summary distills the external security review feedback and anchors the next sprint plans.
+However, to claim "Production Readiness" or handle real-world LLM traffic, you have two critical engineering bottlenecks to address: Context-Awareness (the parser is a stub) and Performance Scaling (linear regex execution).
 
 ### 1. Strong Points (Keep Doing This)
 *   **Security-First Normalization (`app/normalize.py`):**
@@ -107,14 +99,14 @@ However, to claim "Production Readiness" or handle real-world LLM traffic, you h
 ### 2. Critical Gaps & Engineering Feedback
 #### A. The "Context" Gap (Priority: High)
 *   **Observation:** `app/parser.py` is currently a pass-through stub. `app/pipeline.py` passes the full text to all detectors.
-*   **Risk:** LLMs frequently output code tutorials. If an LLM writes: "You can use `curl -X POST...`" in a markdown code block, your current cmd detector will likely flag it as a "Command Injection" risk, generating false positives on explain-only snippets.
+*   **Risk:** LLMs frequently output code tutorials. If an LLM writes: "You can use `curl -X POST...`" in a markdown code block, your current cmd detector will likely flag it as a "Command Injection" risk.
 *   **Feedback:** You need the Context-Aware Parser immediately.
 *   **Action:** Update `parser.py` to split text into segments: `[("text", "Here is the code"), ("code", "curl ...")]`.
 *   **Action:** Modify `scan_all` to allow detectors to subscribe to specific contexts (e.g., cmd detector should potentially be stricter in code blocks but lenient in text blocks, or vice-versa depending on your threat model).
 
 #### B. Linear Scanning Performance (Priority: Medium)
 *   **Observation:** In `app/pipeline.py`, `scan_all` iterates through every detector sequentially.
-*   **Risk:** You currently have ~40 regex rules. If this grows to 400 (common in DLP), your latency will spike linearly. The < 40ms target will be missed on large inputs, especially when combined with context-aware segmentation overhead.
+*   **Risk:** You currently have ~40 regex rules. If this grows to 400 (common in DLP), your latency will spike linearly. The < 40ms target will be missed on large inputs.
 *   **Feedback:**
     *   **Short Term:** Keep as is, it's fine for MVP.
     *   **Long Term:** Implement a Multi-Pass architecture. Use a fast string search algorithm (like Aho-Corasick) to scan for "trigger keywords" first. Only run complex regexes (like the AWS Secret Key regex) if a relevant keyword (e.g., "AKIA", "aws", "key") is present.
@@ -123,7 +115,6 @@ However, to claim "Production Readiness" or handle real-world LLM traffic, you h
 *   **Observation:** `app/ml/preclassifier.py` is a keyword heuristic (if "curl" in text...).
 *   **Risk:** This is too brittle. It will miss obfuscated commands and flag harmless discussions about commands.
 *   **Feedback:** As per your Sprint 3 notes, moving to a TF-IDF + Logistic Regression model is the correct next step. It is lightweight enough (<2ms) to run on CPU and will vastly outperform keyword lists for classifying "Intent" (Malicious Command vs. Educational Text).
-*   **Action:** Stand up TF-IDF feature extraction plus small LR weights in `app/ml/preclassifier.py`, wire it behind `FEATURE_ML_PRECLF`, and track precision/latency in Prometheus.
 
 ### 3. Security & Logic Audit
 I reviewed your detector logic specifically:
@@ -139,12 +130,11 @@ I reviewed your detector logic specifically:
 
 ### 4. Recommended Roadmap Adjustments
 Your current roadmap is good, but I would re-order slightly to prioritize the False Positive problem:
-1.  **Sprint 3 (Immediate):** Context-Aware Parsing. Before adding ML, you need to know where the text is (Code vs. Prose). This yields the biggest ROI for reducing False Positives and is now the top backlog item per review sign-off.
-2.  **Sprint 4:** ML Pre-classifier. Once you have segments, use ML to classify the intent of those segments. Deliver TF-IDF + Logistic Regression along with CI-packaged artifacts.
+1.  **Sprint 3 (Immediate):** Context-Aware Parsing. Before adding ML, you need to know where the text is (Code vs. Prose). This yields the biggest ROI for reducing False Positives.
+2.  **Sprint 4:** ML Pre-classifier. Once you have segments, use ML to classify the intent of those segments.
 3.  **Sprint 5:** Streaming Support. (Currently listed as Post-MVP).
     *   **Note:** For a chat interface, waiting for the full response (blocking) feels sluggish. You will eventually need a "Pass-through stream, buffer window, scan, release" architecture.
 
 ### Final Verdict
 *   **Status:** ✅ Solid MVP.
 *   **Next Move:** Focus entirely on `app/parser.py`. The difference between a "toy" DLP and a usable one is understanding Markdown/Code structure.
-*   **Baseline:** This feedback serves as the verified reference for the next development phase; keep it attached to sprint planning artifacts and demo decks.
