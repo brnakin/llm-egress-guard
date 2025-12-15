@@ -13,6 +13,8 @@ from app.policy import AllowlistEntry, PolicyDefinition, PolicyRule
 class DummySettings:
     policy_path: Path = Path("config/policy.yaml")
     model_version: str = "test"
+    feature_ml_preclf: bool = False  # Disable ML for predictable test behavior
+    feature_context_parsing: bool = True
 
 
 def build_policy(rules: list[PolicyRule], allowlist: list[AllowlistEntry] | None = None) -> PolicyDefinition:

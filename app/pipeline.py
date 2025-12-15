@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from time import perf_counter
 from typing import Any
 
@@ -27,6 +27,9 @@ class Finding:
     action: str
     type: str
     detail: dict[str, Any] = field(default_factory=dict)
+    # Context fields added by parser integration (Sprint 3)
+    context: str = "text"  # Segment type: "text", "code", "link"
+    explain_only: bool = False  # True if finding is in educational context
 
 
 @dataclass(slots=True)
@@ -51,6 +54,32 @@ class PipelineResult:
         }
 
 
+def _annotate_findings_with_context(
+    findings: list[Finding],
+    parsed: parser.ParsedContent,
+) -> None:
+    """Annotate findings with segment context information.
+
+    This enables context-aware risk adjustment in policy evaluation.
+    Findings in code blocks marked as explain-only will receive reduced risk scores.
+
+    Args:
+        findings: List of detector findings to annotate.
+        parsed: Parsed content with segment information.
+    """
+    for finding in findings:
+        # Extract span from finding detail
+        span = finding.detail.get("span")
+        if span and len(span) >= 2:
+            start, end = span[0], span[1]
+            context_type, explain_only = parser.get_context_for_finding(
+                start, end, parsed
+            )
+            finding.context = context_type
+            finding.explain_only = explain_only
+        # If no span available, default to text context (already set)
+
+
 def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> PipelineResult:
     """Execute the guard pipeline for a single response."""
 
@@ -58,7 +87,27 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
     LOGGER.info("pipeline.start", policy_id=guard_request.policy_id)
 
     normalized = normalize.normalize_text(guard_request.response)
-    parsed = parser.parse_content(normalized.text, metadata=guard_request.metadata)
+
+    # Parse content into segments for context-aware processing
+    # ML pre-classifier can be passed here when available (Sprint 3)
+    ml_preclassifier = None
+    if settings.feature_ml_preclf:
+        try:
+            from app.ml.preclassifier import load_preclassifier
+
+            ml_preclassifier = load_preclassifier(model_path=settings.preclf_model_path)
+            metrics.observe_ml_preclf_load(status="success")
+        except Exception:
+            metrics.observe_ml_preclf_load(status="fail")
+            ml_preclassifier = None  # Fall back to heuristic inside parser
+
+    parsed = parser.parse_content(
+        normalized.text,
+        metadata=guard_request.metadata,
+        ml_preclassifier=ml_preclassifier,
+        shadow_mode=settings.shadow_mode,
+        detect_explain_only_enabled=True,
+    )
 
     loaded_policy = policy.load_policy(settings.policy_path)
     policy_view = policy.select_policy(loaded_policy, guard_request.policy_id)
@@ -90,7 +139,18 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
         if any(finding.action == "block" for finding in detector_findings):
             break
 
-    decision = policy.evaluate(policy_view, findings=findings, metadata=guard_request.metadata)
+    # Annotate findings with segment context for risk adjustment
+    _annotate_findings_with_context(findings, parsed)
+
+    # Observe context metrics
+    metrics.observe_context(parsed)
+
+    decision = policy.evaluate(
+        policy_view,
+        findings=findings,
+        metadata=guard_request.metadata,
+        parsed_content=parsed,
+    )
 
     sanitized_text = actions.apply_actions(
         parsed_text=parsed.text,

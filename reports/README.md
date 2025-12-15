@@ -44,6 +44,8 @@ Reports are written primarily in Markdown, but PDF/DOCX exports are provided for
 |--------|------|--------|---------|
 | Sprint 1 | Oct 17-31, 2025 | ✅ Complete | [MD](Sprint-1-Report.md) · [PDF](Sprint-1-Report.pdf) · [DOCX](Sprint-1-Report.docx) |
 | Sprint 2 | Nov 1-14, 2025 | ✅ Complete | [MD](Sprint-2-Report.md) · [PDF](Sprint-2-Report.pdf) · [DOCX](Sprint-2-Report.docx) |
+| Sprint 3 | Nov 14-30, 2025 | ✅ Complete | [MD](Sprint-3-Report.md) · [PDF](Sprint-3-Report.pdf) |
+| Sprint 4 | Dec 1-15, 2025 | ✅ Complete | [MD](Sprint-4-Report.md) · [PDF](Sprint-4-Report.pdf) |
 
 ---
 

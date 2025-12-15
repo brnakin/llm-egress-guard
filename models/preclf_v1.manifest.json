@@ -1,0 +1,16 @@
+{
+  "file": "models/preclf_v1.joblib",
+  "sha256": "b79817f2f538d80c7ae83131ec0ba4831a6a6c80ac5607901b7d32e9b94b1ce1",
+  "size_bytes": 186295,
+  "train_samples": 140,
+  "eval_samples": 35,
+  "metrics": {
+    "accuracy": 0.8857,
+    "f1_macro": 0.8604
+  },
+  "labels": [
+    "educational",
+    "command",
+    "text"
+  ]
+}

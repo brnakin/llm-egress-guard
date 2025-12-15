@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,8 +17,12 @@ class Settings(BaseSettings):
     metrics_enabled: bool = Field(default=True, alias="METRICS_ENABLED")
     feature_ml_preclf: bool = Field(default=True, alias="FEATURE_ML_PRECLF")
     feature_ml_validator: bool = Field(default=False, alias="FEATURE_ML_VALIDATOR")
+    feature_context_parsing: bool = Field(default=True, alias="FEATURE_CONTEXT_PARSING")
+    preclf_model_path: Path = Field(
+        default=Path("models/preclf_v1.joblib"), alias="PRECLF_MODEL_PATH"
+    )
     shadow_mode: bool = Field(default=False, alias="SHADOW_MODE")
-    model_version: str = Field(default="0.1.0", alias="MODEL_VERSION")
+    model_version: str = Field(default="0.2.0", alias="MODEL_VERSION")
 
     model_config = SettingsConfigDict(
         env_file=".env",

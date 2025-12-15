@@ -4,16 +4,18 @@ Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sa
 
 > 📘 **Documentation Guide:** For a quick index of every Markdown file, see [docs/README.md](docs/README.md). It links to the normalization security notes, regression corpus guide, and sprint reports.
 >
-> 🗂 **Sprint Reports:** Each sprint ships Markdown, PDF, and DOCX copies under `reports/` (`Sprint-*-Report.{md,pdf,docx}`).
+> 🗂 **Sprint Reports:** Each sprint ships Markdown, PDF, and DOCX copies under `reports/` (`Sprint-*-Report.{md,pdf,docx}`). Latest: Sprint 4 (ML pre-classifier v1 + shadow metrics).
 
-Sprint 2 now includes:
+Current highlights (through Sprint 4):
 - Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.
 - Policy schema with risk-weighted rules, severity tiers, allowlist regex + tenant overrides, and localized safe messages.
 - Action engine that masks/delinks text or returns safe messages when blocking.
-- Prometheus telemetry for pipeline latency, detector latency, rule hits, and severity counters.
+- Context-aware parsing with explain-only (educational) detection to reduce FPs on tutorial content.
+- Prometheus telemetry for pipeline latency, detector latency, rule hits, severity counters, context type, explain-only counts, and ML pre-clf load/shadow metrics.
 - Regression corpus + golden runner, FastAPI integration tests, and CI automation (Ruff, Black, pytest, regression).
 - Synthetic secret placeholder system (`tests/regression/placeholders.py`) so the repo never stores real-looking keys while detectors still receive realistic payloads.
 - Detector matrix harness (`tests/regression/detector_matrix.py`) that produces JSON + analyst Markdown for demos via a single command.
+- ML Pre-Classifier v1 (TF-IDF + LogisticRegression) behind a feature flag; manifest + checksum verifier (`scripts/check_preclf_model.py`); shadow/A-B logging of ML vs heuristic disagreements.
 
 The full specification lives in `llm_egress_guard_repo_skeleton_prd_technical_prd.md`.
 
@@ -85,11 +87,13 @@ Makefile             Convenience commands wrapping the conda env
   - `egress_guard_detector_latency_seconds{detector}` for each detector stage
   - `egress_guard_rule_hits_total{rule_id}` + `egress_guard_rule_severity_total{severity}`
   - `egress_guard_blocked_total`
+  - `egress_guard_context_type_total{type}` + `egress_guard_explain_only_total`
+  - `egress_guard_ml_preclf_load_total{status}` + `egress_guard_ml_preclf_shadow_total{ml_pred,heuristic,final}`
 - Structured logs (JSON) include request id, policy, findings, latency, and snippet hashes.
 
 ## 6. Next Steps
 
-- Expand regression corpus and ATT&CK-mapped scenarios for future languages/formats (see `tests/regression/README.md`) and begin versioning `golden_v1` snapshots.
-- Implement policy & safe-message hot-reload (cache on timestamp, refresh without restarting) to keep latency stable while enabling runtime updates.
-- Explore context-aware risk downgrades (e.g., “explain only” responses) and ML pre-classifier toggles to soften FP-heavy paths.
-- Integrate SIEM/alert exports and weekly telemetry reports once the ingestion pipeline is stable.
+- Add Grafana dashboards for ML/context metrics.
+- Optional SIEM/alert exports and weekly telemetry reports once ingestion stabilizes.
+- Continue regression corpus expansion (multilingual/tutorial-heavy cases) and tuning based on shadow-mode findings.
+- (Optional) CI enforcement of model checksum via `scripts/check_preclf_model.py`.

@@ -1,6 +1,15 @@
 # Default policy for development. Loaded at startup.
 version: 2
 tiers: default
+
+# Context-aware parsing settings (Sprint 3)
+# These adjust risk scores based on where findings appear in the text
+context_settings:
+  enabled: true
+  code_block_penalty: 15      # Reduce risk by 15 for findings in code blocks
+  explain_only_penalty: 25    # Reduce risk by 25 for educational/explanatory context
+  link_context_bonus: 5       # Increase risk by 5 for clickable URLs in markdown links
+
 allowlist:
   - value: "https://status.example.com"
     types: ["url"]

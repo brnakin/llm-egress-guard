@@ -9,6 +9,8 @@ Use this file as the quick reference for where each major document lives and wha
 | [`README.md`](../README.md) | Project setup, execution flow, metrics, and sprint summaries. |
 | [`NORMALIZATION_SECURITY.md`](../NORMALIZATION_SECURITY.md) | Technical details for the normalization layer’s security measures. |
 | [`docs/README.md`](./README.md) | (This file) Central index for all docs. |
+| [`reports/Sprint-4-Report.md`](../reports/Sprint-4-Report.md) | Sprint 4: ML pre-classifier v1, shadow metrics, manifest/checksum. |
+| [`reports/Sprint-3-Report.md`](../reports/Sprint-3-Report.md) | Sprint 3: Context-aware parsing, explain-only heuristic, FP reduction. |
 
 ## Test & Corpus References
 
@@ -23,6 +25,8 @@ Use this file as the quick reference for where each major document lives and wha
 | File | Description |
 |------|-------------|
 | [`scripts/demo_policy_reload.py`](../scripts/demo_policy_reload.py) | Interactive policy/safe-message hot-reload demo (`PYTHONPATH=. python scripts/demo_policy_reload.py`). |
+| [`scripts/train_preclassifier.py`](../scripts/train_preclassifier.py) | Train TF-IDF + LR pre-classifier and print metrics. |
+| [`scripts/check_preclf_model.py`](../scripts/check_preclf_model.py) | Verify model checksum against manifest. |
 
 ## Sprint Reports
 
@@ -31,6 +35,8 @@ Use this file as the quick reference for where each major document lives and wha
 | [`reports/README.md`](../reports/README.md) | Sprint report index. |
 | [`reports/Sprint-1-Report.{md,pdf,docx}`](../reports/) | Sprint 1 deliverables and decisions. |
 | [`reports/Sprint-2-Report.{md,pdf,docx}`](../reports/) | Sprint 2 detector/policy work and open items. |
+| [`reports/Sprint-3-Report.{md,pdf,docx}`](../reports/) | Sprint 3 context-aware parsing, explain-only heuristic, FP reduction. |
+| [`reports/Sprint-4-Report.{md,pdf}`](../reports/) | Sprint 4 ML pre-classifier v1, shadow metrics, manifest/checksum. |
 
 ## Additional Notes
 
