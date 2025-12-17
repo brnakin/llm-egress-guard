@@ -1,0 +1,50 @@
+# Prometheus Configuration for LLM Egress Guard
+# Documentation: https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+
+global:
+  scrape_interval: 15s      # Collect metrics every 15 seconds
+  evaluation_interval: 15s  # Evaluate alert rules every 15 seconds
+  
+  # Labels added to all metrics
+  external_labels:
+    monitor: 'llm-egress-guard'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           - alertmanager:9093
+
+# Alert rules file (optional)
+# rule_files:
+#   - "alerts/*.yml"
+
+# Scrape targets
+scrape_configs:
+  # LLM Egress Guard main application
+  - job_name: 'egress-guard'
+    static_configs:
+      - targets: ['app:8080']
+        labels:
+          service: 'egress-guard'
+          environment: 'production'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    
+    # If API key is required, uncomment the following lines:
+    # authorization:
+    #   type: Bearer
+    #   credentials: 'your-api-key-here'
+    
+    # Or as header:
+    # params:
+    #   'X-API-Key': ['your-api-key-here']
+
+  # Prometheus self-metrics
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'

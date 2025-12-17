@@ -15,6 +15,11 @@ class DummySettings:
     model_version: str = "test"
     feature_ml_preclf: bool = False  # Disable ML for predictable test behavior
     feature_context_parsing: bool = True
+    shadow_mode: bool = False
+    preclf_model_path: Path = Path("models/preclf_v1.joblib")
+    preclf_manifest_path: Path = Path("models/preclf_v1.manifest.json")
+    enforce_model_integrity: bool = False  # Disable for tests
+    allow_explain_only_bypass: bool = False
 
 
 def build_policy(rules: list[PolicyRule], allowlist: list[AllowlistEntry] | None = None) -> PolicyDefinition:

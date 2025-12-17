@@ -1,0 +1,17 @@
+# Grafana Dashboard Provisioning
+# Dashboards are automatically loaded
+
+apiVersion: 1
+
+providers:
+  - name: 'LLM Egress Guard Dashboards'
+    orgId: 1
+    folder: 'LLM Egress Guard'
+    folderUid: 'egress-guard'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

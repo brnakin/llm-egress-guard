@@ -95,7 +95,11 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
         try:
             from app.ml.preclassifier import load_preclassifier
 
-            ml_preclassifier = load_preclassifier(model_path=settings.preclf_model_path)
+            ml_preclassifier = load_preclassifier(
+                model_path=settings.preclf_model_path,
+                manifest_path=settings.preclf_manifest_path,
+                enforce_integrity=settings.enforce_model_integrity,
+            )
             metrics.observe_ml_preclf_load(status="success")
         except Exception:
             metrics.observe_ml_preclf_load(status="fail")
@@ -150,6 +154,7 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
         findings=findings,
         metadata=guard_request.metadata,
         parsed_content=parsed,
+        allow_explain_only_bypass=settings.allow_explain_only_bypass,
     )
 
     sanitized_text = actions.apply_actions(

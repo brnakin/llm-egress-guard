@@ -345,7 +345,22 @@ def evaluate(
     findings: list[Any],
     metadata: dict[str, Any] | None = None,
     parsed_content: ParsedContent | None = None,
+    allow_explain_only_bypass: bool = False,
 ) -> PolicyDecision:
+    """Evaluate findings against policy and return a decision.
+
+    Args:
+        policy_def: The policy definition to evaluate against.
+        findings: List of findings from detectors.
+        metadata: Reserved for future use.
+        parsed_content: Reserved; context info is already in findings.
+        allow_explain_only_bypass: If True, allow explain-only content to bypass
+            blocking. Default is False for security (OWASP A04). Set to True only
+            for tenants that explicitly opt-in to educational content bypass.
+
+    Returns:
+        PolicyDecision with blocked status, risk score, and applied rules.
+    """
     del metadata  # reserved for future use
     del parsed_content  # context info is already in findings
 
@@ -374,20 +389,21 @@ def evaluate(
         risk_score += adjusted_weight
 
         # Block decisions can be downgraded for educational/explain-only content
+        # ONLY if allow_explain_only_bypass is explicitly enabled (opt-in)
         if rule.action == "block":
             explain_only = getattr(finding, "explain_only", False)
             finding_type = getattr(finding, "type", "")
 
-            # Explain-only command findings in code blocks should not block
-            # This is the key FP reduction: educational command examples pass through
-            if explain_only and finding_type == "cmd":
-                # Downgrade to non-blocking - finding is still recorded
-                continue
+            # Explain-only bypass is opt-in only (OWASP A04 hardening)
+            if allow_explain_only_bypass and explain_only:
+                # Explain-only command findings in code blocks should not block
+                if finding_type == "cmd":
+                    continue
 
-            # Other explain-only findings with significantly reduced risk
-            # can also be downgraded (threshold is half of default weight)
-            if explain_only and adjusted_weight < DEFAULT_RULE_WEIGHT // 2:
-                continue
+                # Other explain-only findings with significantly reduced risk
+                # can also be downgraded (threshold is half of default weight)
+                if adjusted_weight < DEFAULT_RULE_WEIGHT // 2:
+                    continue
 
             blocked = True
             safe_message_key = safe_message_key or rule.safe_message
@@ -409,20 +425,6 @@ def evaluate(
 
 def invalidate_policy_cache(path: Path | None = None) -> None:
     """Clear cached policy entries (all or a specific file)."""
-
-    with _POLICY_LOCK:
-        if path is None:
-            _POLICY_CACHE.clear()
-        else:
-            _POLICY_CACHE.pop(path.resolve(), None)
-
-
-    with _POLICY_LOCK:
-        if path is None:
-            _POLICY_CACHE.clear()
-        else:
-            _POLICY_CACHE.pop(path.resolve(), None)
-
 
     with _POLICY_LOCK:
         if path is None:
