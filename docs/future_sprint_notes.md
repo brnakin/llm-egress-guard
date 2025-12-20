@@ -1,140 +1,123 @@
-# Notes for the Future Sprint
+# Notes for Future Sprints
 
-These notes summarize how we plan to finish the Sprint 2 carryover work and highlight the gaps that must be closed before the next demo.
-
-## Context-Aware Parser Segmentation
-- The parser module is still a stub; we need it to emit `text/code/link/table` segments so command and PII detectors can apply context penalties or bonuses.
-- It should build on the normalized text and emit metadata that the regression runner can persist for analysis.
-- Once complete, “explain-only” command passages should generate fewer false positives because their scores can be lowered before policy evaluation.
+> **Updated:** Dec 17, 2025 — Reflects completion of Sprint 4 (ML pre-classifier, security hardening, observability stack).
 
 ---
 
-## Lightweight ML Layer
-- Feature flags (`FEATURE_ML_PRECLF`, `FEATURE_ML_VALIDATOR`) exist, but the actual `app/ml/` services and artifacts are missing.
-- Pre-classifier will run in shadow mode first to feed risk scores to the command detector; the spaCy validator will double-check regex PII hits.
-- Targets: <2 ms added p95 latency and ≥0.9 AUC. Model artifacts must be packaged via CI.
+## ✅ Completed Items (Sprint 3-4)
+
+### Context-Aware Parser Segmentation (Sprint 3)
+- ✅ `app/parser.py` emits `text/code/link` segments with metadata
+- ✅ Context penalties/bonuses applied in `app/policy.py`
+- ✅ "Explain-only" detection reduces FPs on tutorial content
+- ✅ Metrics: `egress_guard_context_type_total`, `egress_guard_explain_only_total`
+
+### ML Pre-Classifier v1 (Sprint 4)
+- ✅ TF-IDF + Logistic Regression model (`models/preclf_v1.joblib`)
+- ✅ Eval: Accuracy 0.8857, F1 macro 0.8604, <2ms latency
+- ✅ Feature flag: `FEATURE_ML_PRECLF=true`
+- ✅ Shadow mode: `SHADOW_MODE=true` logs ML vs heuristic disagreements
+- ✅ Model manifest + checksum verification (`scripts/check_preclf_model.py`)
+
+### Security Hardening - OWASP (Sprint 4)
+- ✅ **Authentication (A01/A05):** API key gate (`REQUIRE_API_KEY`, `API_KEY`)
+- ✅ **DoS Protection (A11):** Request size limits, timeouts, concurrency control
+- ✅ **Model Integrity (A08):** SHA256 verification before loading ML artifacts
+- ✅ **Policy Controls (A04):** `ALLOW_EXPLAIN_ONLY_BYPASS` prevents bypasses
+- ✅ **Security Assessment:** `reports/security_assessment_owasp.md`
+
+### Observability Stack (Sprint 4)
+- ✅ Prometheus integration with 15s scrape interval
+- ✅ Grafana with auto-provisioned datasources and dashboards
+- ✅ Dashboard panels: Request Rate, Block Rate, Latency, Rule Hits, Context Distribution
+- ✅ Setup guide: `docs/observability-setup.md`
 
 ---
 
-## Telemetry & Test Integration
-- `/metrics` currently exposes latency and rule hits; we must add new counters such as pre-classifier decisions, validator agree-rate, and queue depth.
-- Regression runner should report context/ML outcomes so we can measure FP reductions.
-- ML evaluation (AUC, agree-rate) has to become part of the pipeline or CI step.
+## 🔄 Remaining Work (Sprint 5+)
+
+### SIEM / Alert Integrations (Priority: Medium)
+Goal: Push rule hits/blocks to Splunk/ELK/webhooks for SOC visibility.
+
+| Task | Description |
+|------|-------------|
+| `SIEM-201` | Telemetry bus: queue, backpressure metrics, secure payload serialization |
+| `SIEM-202` | Splunk HEC + Elastic bulk clients with retry/backoff |
+| `SIEM-203` | Generic webhook sink, curl templates, SOC runbooks |
+
+Exit criteria: <5s delivery, `/guard` unaffected by emitter failures, dashboards ready.
+
+### Streaming Support (Priority: Medium)
+Goal: Support chat interfaces without blocking on full response.
+
+- Pass-through stream, buffer window, scan, release architecture
+- Incremental scanning for long-running LLM outputs
+- WebSocket or SSE transport option
+
+### spaCy Validator Integration (Priority: Low)
+Goal: Double-check regex PII hits with NER model.
+
+| Task | Description |
+|------|-------------|
+| `PAR-302` | Lazy-load spaCy model, disagreement telemetry |
+| `PAR-303` | Per-tenant toggles, Docker/runtime docs, rollback checklist |
+
+Note: spaCy model bloats the container; keep optional and lazy-loaded.
+
+### Performance Optimization (Priority: Low)
+- Aho-Corasick multi-pattern matching for trigger keywords
+- Parallel detector execution for large inputs
+- Currently ~1.76ms avg latency is acceptable
 
 ---
 
-## Scope Creep
-- Each improvement should stay within a clear epic/ticket (e.g., CA-101 vs PAR-301) with defined acceptance criteria.
-- Heavy items (spaCy, SIEM emitters) must not start until parser and pre-classifier are functional; enforce WIP limits.
+## 📋 Configuration Reference
+
+### Current Feature Flags
+```bash
+# ML Pre-Classifier
+export FEATURE_ML_PRECLF=true
+export PRECLF_MODEL_PATH=models/preclf_v1.joblib
+export SHADOW_MODE=false  # Set true for A/B logging
+
+# Security (Production)
+export REQUIRE_API_KEY=true
+export API_KEY="your-secret-key"
+export ENFORCE_MODEL_INTEGRITY=true
+export ALLOW_EXPLAIN_ONLY_BYPASS=false
+
+# DoS Protection
+export MAX_REQUEST_SIZE_BYTES=524288  # 512KB
+export REQUEST_TIMEOUT_SECONDS=30
+export MAX_CONCURRENT_GUARD_REQUESTS=10
+```
+
+### Observability
+```bash
+docker compose up -d
+# Prometheus: http://localhost:9090
+# Grafana: http://localhost:3000 (admin/admin)
+```
 
 ---
 
-## Data / Label Gap
-- TF-IDF and validator training both need ≥200 labeled “instruction vs execution” examples; we must plan a placeholder-based corpus pipeline.
-- Follow privacy rules while collecting data: rely on snippet hashes and synthetic placeholders so raw secrets/PII never land in git.
+## 📊 Current Metrics
+
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Avg Latency | ~1.76ms | Pipeline only, excludes HTTP overhead |
+| Block Rate | ~15.7% | Varies by traffic pattern |
+| ML Accuracy | 88.57% | TF-IDF + LR on synthetic data |
+| ML F1 Macro | 86.04% | Educational 0.923, Command 0.889, Text 0.769 |
 
 ---
 
-## Model Size / Performance Risk
-- The spaCy model will bloat the container; it must stay optional and lazy-loaded.
-- The pre-classifier model must remain <10 MB with <2 ms p95 overhead; otherwise consider lighter alternatives (Presidio, rule-based heuristics).
+## 🎯 Sprint 5 Focus
+
+1. **SIEM Integration** — Enable SOC visibility via Splunk/Elastic/webhooks
+2. **Streaming Support** — Handle chat interfaces gracefully
+3. **Production Tuning** — Based on shadow-mode findings and Grafana metrics
 
 ---
 
-## Policy Misalignment
-- Rules like “penalize PII inside code blocks” must be overrideable per tenant.
-- Add context penalty/bonus knobs to `config/policy.yaml` and document how operators can adjust them safely.
-
----
-
-## Telemetry / Privacy
-- If validator disagreement samples are logged, store only masked snippets + hashes; otherwise emit metrics only.
-- SIEM/alert integrations must minimize tenant identifiers and restrict outbound payload fields to what SOC tooling actually needs.
-
----
-
-- **Context-aware risk tuning & ML pre-classifier enablement:** Goal is to cut false positives on explain-only command snippets without weakening blocks on real payloads. Work covers normalization tags (`explain_only`), lightweight TF-IDF → LR model, feature flag plumbing, Prometheus counters, and regression-proof exit criteria (<2% latency hit, ≥90% precision). Dependencies: ≥200 labeled samples, CI packaging, documentation for tuning/rollback.
-
-  - `CA-101 Data Labeling & Dedup`: corpus expansion + `explain_only` tagging hook.
-  - `CA-102 TF-IDF Pre-classifier Service`: inference helper (`app/ml/preclassifier.py`), feature flag, pipeline traces.
-  - `CA-103 Policy & Metrics Integration`: risk-weight wiring, Prometheus counter/histogram, tuning docs.
-
----
-
-- **SIEM / alert integrations:** Goal is to push rule hits/blocks to Splunk/ELK/webhooks. Work includes an emitter abstraction, queue/backpressure metrics, Splunk HEC + Elastic bulk clients, webhook sink, and SOC runbooks. Exit criteria: <5s delivery, `/guard` unaffected by emitter failures, dashboards/screenshots ready.
-
-  - `SIEM-201 Telemetry Bus`: queue, backpressure metrics, secure payload serialization.
-  - `SIEM-202 Splunk & Elastic Emitters`: HEC/Bulk clients with retry/backoff + unit tests.
-  - `SIEM-203 Webhook + Runbooks`: generic webhook sink, curl templates, SOC dashboards, observable failure paths.
-
----
-
-**Parser + ML validator:** Goal is format-aware detection with spaCy confirmation of regex PII hits. Work spans Markdown/code parser, detectors consuming `segment.context`, spaCy pipeline packaging, caching, and feature flags. Exit criteria: parser coverage in regression corpus, ≥95% spaCy agreement, detector matrix demonstrating lower FP.
-
-  - `PAR-301 Markdown/Code Parser`: structured segments + regression fixtures.
-  - `PAR-302 spaCy Validator Integration`: lazy-load model, disagreement telemetry.
-  - `PAR-303 Feature Flags & Ops Docs`: per-tenant toggles, Docker/runtime docs, rollback checklist.
-
----
-
-Sprint focus: clearing context-aware tuning plus telemetry bus first unlocks ML risk scoring and outbound visibility; remaining epics stay on deck for subsequent iterations.
-
----
-
-## Executive Summary
-You have built a solid, security-first MVP foundation. The project maturity is surprisingly high for an early-stage tool, particularly regarding normalization security and deterministic testing. You are effectively at the "Sprint 2 Complete" stage as documented, with a working pipeline, robust regex-based detection, and telemetry.
-However, to claim "Production Readiness" or handle real-world LLM traffic, you have two critical engineering bottlenecks to address: Context-Awareness (the parser is a stub) and Performance Scaling (linear regex execution).
-
-### 1. Strong Points (Keep Doing This)
-*   **Security-First Normalization (`app/normalize.py`):**
-    *   Your approach to normalization (URL → HTML → NFKC → Strip) is excellent. Most DLP tools fail here by allowing simple bypasses like `%26lt;` or zero-width spaces.
-    *   The resource limits (entity counts, expansion checks) and "fail-secure" defaults prevent DoS attacks against the guard itself.
-*   **Quality Assurance & Testing:**
-    *   The Golden File / Regression Runner (`tests/regression`) is the right way to test DLP. It prevents regression loops where fixing a False Positive (FP) breaks a True Positive (TP).
-    *   **Placeholder Injection:** Using `{{TOKEN}}` markers and rendering secrets at runtime for tests is a best practice. It keeps your repo free of actual secrets while testing the detectors realistically.
-*   **Detector Logic:**
-    *   **Validation over matching:** You aren't just matching regexes; you are validating them (Luhn algorithm for PAN, checksums for TCKN, Base64 checks for JWTs). This significantly reduces "alert fatigue."
-    *   **Entropy Checks:** The implementation of Shannon entropy for high-entropy blobs and AWS secrets is mathematically sound.
-
-### 2. Critical Gaps & Engineering Feedback
-#### A. The "Context" Gap (Priority: High)
-*   **Observation:** `app/parser.py` is currently a pass-through stub. `app/pipeline.py` passes the full text to all detectors.
-*   **Risk:** LLMs frequently output code tutorials. If an LLM writes: "You can use `curl -X POST...`" in a markdown code block, your current cmd detector will likely flag it as a "Command Injection" risk.
-*   **Feedback:** You need the Context-Aware Parser immediately.
-*   **Action:** Update `parser.py` to split text into segments: `[("text", "Here is the code"), ("code", "curl ...")]`.
-*   **Action:** Modify `scan_all` to allow detectors to subscribe to specific contexts (e.g., cmd detector should potentially be stricter in code blocks but lenient in text blocks, or vice-versa depending on your threat model).
-
-#### B. Linear Scanning Performance (Priority: Medium)
-*   **Observation:** In `app/pipeline.py`, `scan_all` iterates through every detector sequentially.
-*   **Risk:** You currently have ~40 regex rules. If this grows to 400 (common in DLP), your latency will spike linearly. The < 40ms target will be missed on large inputs.
-*   **Feedback:**
-    *   **Short Term:** Keep as is, it's fine for MVP.
-    *   **Long Term:** Implement a Multi-Pass architecture. Use a fast string search algorithm (like Aho-Corasick) to scan for "trigger keywords" first. Only run complex regexes (like the AWS Secret Key regex) if a relevant keyword (e.g., "AKIA", "aws", "key") is present.
-
-#### C. ML Components are Stubs (Priority: Medium)
-*   **Observation:** `app/ml/preclassifier.py` is a keyword heuristic (if "curl" in text...).
-*   **Risk:** This is too brittle. It will miss obfuscated commands and flag harmless discussions about commands.
-*   **Feedback:** As per your Sprint 3 notes, moving to a TF-IDF + Logistic Regression model is the correct next step. It is lightweight enough (<2ms) to run on CPU and will vastly outperform keyword lists for classifying "Intent" (Malicious Command vs. Educational Text).
-
-### 3. Security & Logic Audit
-I reviewed your detector logic specifically:
-*   **JWT Detector (`app/detectors/secrets.py`):**
-    *   **Code:** `_looks_like_jwt` checks for 3 parts and valid Base64.
-    *   **Verdict:** Good. Prevents FPs on random dot-separated strings.
-*   **Email Masking (`app/detectors/pii.py`):**
-    *   **Code:** `f"{local[0]}***{local[-1]}@{domain}"`
-    *   **Verdict:** Safe. It preserves the domain (useful for security context) while hiding the user.
-*   **Policy Evaluation (`app/policy.py`):**
-    *   **Code:** `risk_score = min(risk_score, 100)`
-    *   **Verdict:** Good. Cap the score to normalize downstream consumption (SIEMs/Dashboards).
-
-### 4. Recommended Roadmap Adjustments
-Your current roadmap is good, but I would re-order slightly to prioritize the False Positive problem:
-1.  **Sprint 3 (Immediate):** Context-Aware Parsing. Before adding ML, you need to know where the text is (Code vs. Prose). This yields the biggest ROI for reducing False Positives.
-2.  **Sprint 4:** ML Pre-classifier. Once you have segments, use ML to classify the intent of those segments.
-3.  **Sprint 5:** Streaming Support. (Currently listed as Post-MVP).
-    *   **Note:** For a chat interface, waiting for the full response (blocking) feels sluggish. You will eventually need a "Pass-through stream, buffer window, scan, release" architecture.
-
-### Final Verdict
-*   **Status:** ✅ Solid MVP.
-*   **Next Move:** Focus entirely on `app/parser.py`. The difference between a "toy" DLP and a usable one is understanding Markdown/Code structure.
+*Last updated: Dec 17, 2025*

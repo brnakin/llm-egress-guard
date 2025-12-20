@@ -4,13 +4,15 @@ Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sa
 
 > 📘 **Documentation Guide:** For a quick index of every Markdown file, see [docs/README.md](docs/README.md). It links to the normalization security notes, regression corpus guide, and sprint reports.
 >
-> 🗂 **Sprint Reports:** Each sprint ships Markdown, PDF, and DOCX copies under `reports/` (`Sprint-*-Report.{md,pdf,docx}`). Latest: Sprint 4 (ML pre-classifier v1 + shadow metrics).
+> 🗂 **Sprint Reports:** Each sprint ships Markdown and PDF copies under `reports/` (`Sprint-*-Report.{md,pdf}`). Latest: Sprint 4 (ML pre-classifier v1 + security hardening + observability stack).
 
 Current highlights (through Sprint 4):
 - Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.
 - Policy schema with risk-weighted rules, severity tiers, allowlist regex + tenant overrides, and localized safe messages.
 - Action engine that masks/delinks text or returns safe messages when blocking.
 - Context-aware parsing with explain-only (educational) detection to reduce FPs on tutorial content.
+- **Security hardening** (OWASP-aligned): API key authentication, request size/timeout limits, concurrency control, model integrity verification (SHA256), and policy downgrade controls.
+- **Observability stack**: Prometheus + Grafana with auto-provisioned dashboards for metrics visualization (request rate, latency, block rate, rule hits, context distribution).
 - Prometheus telemetry for pipeline latency, detector latency, rule hits, severity counters, context type, explain-only counts, and ML pre-clf load/shadow metrics.
 - Regression corpus + golden runner, FastAPI integration tests, and CI automation (Ruff, Black, pytest, regression).
 - Synthetic secret placeholder system (`tests/regression/placeholders.py`) so the repo never stores real-looking keys while detectors still receive realistic payloads.
@@ -50,9 +52,11 @@ uvicorn transports.http_fastapi_sync:app --host 0.0.0.0 --port 8080 --reload
 ```bash
 docker compose up -d --build
 # Guard proxied via https://localhost/guard (self-signed cert)
+# Prometheus: http://localhost:9090
+# Grafana: http://localhost:3000 (admin/admin)
 ```
 
-The Compose stack builds the FastAPI service and exposes Nginx with dev certificates located in `nginx/certs/`.
+The Compose stack builds the FastAPI service, Prometheus, Grafana, and Nginx with dev certificates located in `nginx/certs/`. See [docs/observability-setup.md](docs/observability-setup.md) for the full observability guide.
 
 ## 3. Tests & Tooling
 
@@ -72,28 +76,55 @@ PYTHONPATH=. python scripts/demo_policy_reload.py  # policy hot-reload demo
 ## 4. Project Layout
 
 ```text
-app/                 FastAPI app, pipeline, detectors, policy/actions
+app/                 FastAPI app, pipeline, detectors, policy/actions, ML modules
 config/              Default policy, allowlists, localized safe messages
+grafana/             Grafana provisioning (datasources, dashboards)
+models/              ML model artifacts (preclf_v1.joblib, manifests)
 nginx/               Dev reverse proxy + self-signed TLS
+prometheus/          Prometheus configuration
 tests/               Unit, API, and regression corpora
-docker-compose.yml   Dev stack (FastAPI + Nginx)
+reports/             Sprint reports and security assessments
+docs/                Documentation (setup guides, notes)
+docker-compose.yml   Full stack (FastAPI + Nginx + Prometheus + Grafana)
 Makefile             Convenience commands wrapping the conda env
 ```
 
 ## 5. Metrics & Observability
 
 - `/metrics` exposes Prometheus series:
-  - `egress_guard_latency_seconds` (pipeline p50/p95)
+  - `egress_guard_latency_seconds` (pipeline p50/p95, ~1.6ms avg)
   - `egress_guard_detector_latency_seconds{detector}` for each detector stage
   - `egress_guard_rule_hits_total{rule_id}` + `egress_guard_rule_severity_total{severity}`
   - `egress_guard_blocked_total`
   - `egress_guard_context_type_total{type}` + `egress_guard_explain_only_total`
   - `egress_guard_ml_preclf_load_total{status}` + `egress_guard_ml_preclf_shadow_total{ml_pred,heuristic,final}`
+- **Grafana Dashboard** (auto-provisioned):
+  - Overview: Request Rate, Block Rate, Avg Latency, Total Findings
+  - Performance: Latency Percentiles (p50/p90/p99), Blocked vs Allowed Requests
+  - Detection: Rule Hits Distribution, Context Type Distribution, Explain-Only Detections
+  - Top Rules: Bar chart and time series
 - Structured logs (JSON) include request id, policy, findings, latency, and snippet hashes.
 
-## 6. Next Steps
+## 6. Security Hardening
 
-- Add Grafana dashboards for ML/context metrics.
+OWASP-aligned security controls (see [reports/security_assessment_owasp.md](reports/security_assessment_owasp.md)):
+
+| Control | Setting | Default |
+|---------|---------|---------|
+| API Key Authentication | `REQUIRE_API_KEY`, `API_KEY` | Disabled |
+| Request Size Limit | `MAX_REQUEST_SIZE_BYTES` | 512KB |
+| Request Timeout | `REQUEST_TIMEOUT_SECONDS` | 30s |
+| Concurrency Limit | `MAX_CONCURRENT_GUARD_REQUESTS` | 10 |
+| Model Integrity | `ENFORCE_MODEL_INTEGRITY` | Enabled |
+| Explain-Only Bypass | `ALLOW_EXPLAIN_ONLY_BYPASS` | Disabled |
+
+Production deployment should enable `REQUIRE_API_KEY=true` and set a strong `API_KEY`.
+
+## 7. Next Steps
+
+- ✅ ~~Add Grafana dashboards for ML/context metrics.~~ (Completed in Sprint 4)
+- ✅ ~~Security hardening (OWASP audit, auth, rate limiting).~~ (Completed in Sprint 4)
 - Optional SIEM/alert exports and weekly telemetry reports once ingestion stabilizes.
 - Continue regression corpus expansion (multilingual/tutorial-heavy cases) and tuning based on shadow-mode findings.
 - (Optional) CI enforcement of model checksum via `scripts/check_preclf_model.py`.
+- Streaming support for chat interfaces (pass-through stream, buffer window, scan, release).
