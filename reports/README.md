@@ -20,10 +20,14 @@ This directory contains sprint reports, security assessments, and project docume
   - Context-aware parsing
   - Explain-only heuristic
   - FP reduction
-- **Sprint-4-Report.\{md,pdf\}** - Sprint 4 completion report (Dec 1-17, 2025)
+- **Sprint-4-Report.\{md,pdf\}** - Sprint 4 completion report (Dec 1-15, 2025)
   - ML pre-classifier v1 (TF-IDF + Logistic Regression)
-  - Security hardening (OWASP-aligned)
+  - Shadow/A-B instrumentation
+  - Model manifest & checksum verification
+- **Sprint-5-Report.\{md,pdf\}** - Sprint 5 completion report (Dec 15-22, 2025)
   - Observability stack (Prometheus + Grafana)
+  - Security hardening (OWASP-aligned)
+  - API authentication, DoS protection, model integrity
 - **security_assessment_owasp.md** - OWASP Top 10 (2021) security assessment
   - Code-referenced findings with impact analysis
   - Exploitation scenarios
@@ -57,7 +61,8 @@ Reports are written primarily in Markdown, but PDF/DOCX exports are provided for
 | Sprint 1 | Oct 17-31, 2025 | ✅ Complete | [MD](Sprint-1-Report.md) · [PDF](Sprint-1-Report.pdf) · [DOCX](Sprint-1-Report.docx) |
 | Sprint 2 | Nov 1-14, 2025 | ✅ Complete | [MD](Sprint-2-Report.md) · [PDF](Sprint-2-Report.pdf) · [DOCX](Sprint-2-Report.docx) |
 | Sprint 3 | Nov 14-30, 2025 | ✅ Complete | [MD](Sprint-3-Report.md) · [PDF](Sprint-3-Report.pdf) |
-| Sprint 4 | Dec 1-17, 2025 | ✅ Complete | [MD](Sprint-4-Report.md) · [PDF](Sprint-4-Report.pdf) |
+| Sprint 4 | Dec 1-15, 2025 | ✅ Complete | [MD](Sprint-4-Report.md) · [PDF](Sprint-4-Report.pdf) |
+| Sprint 5 | Dec 15-22, 2025 | ✅ Complete | [MD](Sprint-5-Report.md) · [PDF](Sprint-5-Report.pdf) |
 
 ## Security Assessments
 

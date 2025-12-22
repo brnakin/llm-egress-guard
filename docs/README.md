@@ -10,7 +10,8 @@ Use this file as the quick reference for where each major document lives and wha
 | [`NORMALIZATION_SECURITY.md`](../NORMALIZATION_SECURITY.md) | Technical details for the normalization layer's security measures. |
 | [`docs/README.md`](./README.md) | (This file) Central index for all docs. |
 | [`docs/observability-setup.md`](./observability-setup.md) | Prometheus + Grafana setup guide with Docker Compose. |
-| [`reports/Sprint-4-Report.md`](../reports/Sprint-4-Report.md) | Sprint 4: ML pre-classifier v1, security hardening, observability stack. |
+| [`reports/Sprint-5-Report.md`](../reports/Sprint-5-Report.md) | Sprint 5: Observability stack, security hardening (OWASP). |
+| [`reports/Sprint-4-Report.md`](../reports/Sprint-4-Report.md) | Sprint 4: ML pre-classifier v1, shadow metrics, manifest/checksum. |
 | [`reports/Sprint-3-Report.md`](../reports/Sprint-3-Report.md) | Sprint 3: Context-aware parsing, explain-only heuristic, FP reduction. |
 | [`reports/security_assessment_owasp.md`](../reports/security_assessment_owasp.md) | OWASP Top 10 (2021) security assessment with remediation. |
 
@@ -38,7 +39,8 @@ Use this file as the quick reference for where each major document lives and wha
 | [`reports/Sprint-1-Report.{md,pdf,docx}`](../reports/) | Sprint 1 deliverables and decisions. |
 | [`reports/Sprint-2-Report.{md,pdf,docx}`](../reports/) | Sprint 2 detector/policy work and open items. |
 | [`reports/Sprint-3-Report.{md,pdf}`](../reports/) | Sprint 3 context-aware parsing, explain-only heuristic, FP reduction. |
-| [`reports/Sprint-4-Report.{md,pdf}`](../reports/) | Sprint 4 ML pre-classifier v1, security hardening, observability stack. |
+| [`reports/Sprint-4-Report.{md,pdf}`](../reports/) | Sprint 4 ML pre-classifier v1, shadow metrics, manifest/checksum. |
+| [`reports/Sprint-5-Report.{md,pdf}`](../reports/) | Sprint 5 observability stack, security hardening (OWASP). |
 
 ## Security & Compliance
 

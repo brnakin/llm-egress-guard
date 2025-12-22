@@ -4,9 +4,9 @@ Deterministic data loss prevention (DLP) layer that normalizes, inspects, and sa
 
 > 📘 **Documentation Guide:** For a quick index of every Markdown file, see [docs/README.md](docs/README.md). It links to the normalization security notes, regression corpus guide, and sprint reports.
 >
-> 🗂 **Sprint Reports:** Each sprint ships Markdown and PDF copies under `reports/` (`Sprint-*-Report.{md,pdf}`). Latest: Sprint 4 (ML pre-classifier v1 + security hardening + observability stack).
+> 🗂 **Sprint Reports:** Each sprint ships Markdown and PDF copies under `reports/` (`Sprint-*-Report.{md,pdf}`). Latest: Sprint 5 (observability stack + security hardening).
 
-Current highlights (through Sprint 4):
+Current highlights (through Sprint 5):
 - Detector suite for PII (email/phone/IBAN/TCKN/PAN/IP), secrets (JWT, cloud/API keys, PEM blocks, high entropy), URL risks (data URIs, credentials-in-URL, suspicious TLD/shorteners), command/script chains, and encoded exfil blobs.
 - Policy schema with risk-weighted rules, severity tiers, allowlist regex + tenant overrides, and localized safe messages.
 - Action engine that masks/delinks text or returns safe messages when blocking.
@@ -122,8 +122,8 @@ Production deployment should enable `REQUIRE_API_KEY=true` and set a strong `API
 
 ## 7. Next Steps
 
-- ✅ ~~Add Grafana dashboards for ML/context metrics.~~ (Completed in Sprint 4)
-- ✅ ~~Security hardening (OWASP audit, auth, rate limiting).~~ (Completed in Sprint 4)
+- ✅ ~~Add Grafana dashboards for ML/context metrics.~~ (Completed in Sprint 5)
+- ✅ ~~Security hardening (OWASP audit, auth, rate limiting).~~ (Completed in Sprint 5)
 - Optional SIEM/alert exports and weekly telemetry reports once ingestion stabilizes.
 - Continue regression corpus expansion (multilingual/tutorial-heavy cases) and tuning based on shadow-mode findings.
 - (Optional) CI enforcement of model checksum via `scripts/check_preclf_model.py`.

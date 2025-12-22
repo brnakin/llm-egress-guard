@@ -1,15 +1,15 @@
 # Sprint 4 Completion Report: LLM Egress Guard
 
 **Project:** LLM Egress Guard - Data Loss Prevention for LLM Outputs  
-**Sprint:** Sprint 4 (Dec 1 - Dec 17, 2025)  
+**Sprint:** Sprint 4 (Dec 1 - Dec 15, 2025)  
 **Status:** [COMPLETE]  
 **Prepared by:** Baran Akin  
-**Date:** Dec 17, 2025
+**Date:** Dec 15, 2025
 
 ---
 
 ## Executive Summary
-Sprint 4 delivers a functional ML Pre-Classifier (TF-IDF + Logistic Regression), integrated behind a feature flag, with shadow/A-B instrumentation and model integrity checks. Additionally, this sprint includes comprehensive security hardening (OWASP-aligned) and a complete observability stack with Prometheus and Grafana. Context-aware parsing and FP reduction from Sprint 3 remain stable.
+Sprint 4 delivers a functional ML Pre-Classifier (TF-IDF + Logistic Regression), integrated behind a feature flag, with shadow/A-B instrumentation and model integrity checks. Context-aware parsing and FP reduction from Sprint 3 remain stable. Grafana dashboards and CI checksum enforcement are deferred to Sprint 5.
 
 ---
 
@@ -22,43 +22,24 @@ Sprint 4 delivers a functional ML Pre-Classifier (TF-IDF + Logistic Regression),
 | Shadow/A-B Instrumentation | Log ML vs heuristic disagreements | ✅ Complete |
 | Model Manifest & Checksum | Manifest + verification script | ✅ Complete |
 | Context-aware parsing & FP reduction | Carried over, stable | ✅ Complete |
-| Security Hardening (OWASP) | Auth, rate limiting, model integrity, policy controls | ✅ Complete |
-| Observability Stack | Prometheus + Grafana with auto-provisioned dashboards | ✅ Complete |
+| Grafana dashboards | Prometheus panels for ML & context metrics | 🔄 Deferred → Sprint 5 |
+| CI checksum step | Enforce model checksum in pipeline | 🔄 Deferred → Sprint 5 |
 
 ---
 
 ## Implementation Highlights
 
-### ML Pre-Classifier
 - **Model:** `models/preclf_v1.joblib`  
   - Eval: Accuracy 0.8857; F1 macro 0.8604  
   - Per label: educational f1=0.923, command f1=0.889, text f1=0.769  
 - **Manifest:** `models/preclf_v1.manifest.json` (sha256, size recorded)  
 - **Loader:** `app/ml/preclassifier.py` loads model; falls back to heuristic on failure  
 - **Pipeline:** `FEATURE_ML_PRECLF` + `PRECLF_MODEL_PATH` control model use; `SHADOW_MODE` logs ML vs heuristic diffs without changing decisions  
+- **Metrics:**  
+  - `egress_guard_ml_preclf_load_total{status}` (success/fail)  
+  - `egress_guard_ml_preclf_shadow_total{ml_pred,heuristic,final}` (disagreements)  
+  - Existing context/blocked/rule metrics remain
 - **Validation script:** `scripts/check_preclf_model.py` verifies checksum vs manifest
-
-### Security Hardening (OWASP-Aligned)
-- **Authentication (A01/A05):** Optional API key gate via `REQUIRE_API_KEY` + `API_KEY`
-- **DoS Protection (A11):** Request size limit (512KB), timeout (30s), concurrency (10 workers)
-- **Model Integrity (A08):** SHA256 verification before loading ML artifacts
-- **Policy Controls (A04):** `ALLOW_EXPLAIN_ONLY_BYPASS` prevents explain-only from bypassing blocks
-- **Security Assessment:** Full OWASP Top 10 audit in `reports/security_assessment_owasp.md`
-
-### Observability Stack
-- **Prometheus:** Scrapes `/metrics` every 15s; 15-day retention
-- **Grafana:** Auto-provisioned datasource + dashboard
-- **Dashboard Panels:**
-  - Overview: Request Rate, Block Rate (~15.7%), Avg Latency (~1.76ms), Total Findings
-  - Performance: Latency Percentiles (p50/p90/p99), Blocked vs Allowed Requests
-  - Detection: Rule Hits Distribution, Context Type Distribution, Explain-Only Detections
-  - Top Rules: Bar chart + time series
-- **Documentation:** `docs/observability-setup.md` (step-by-step guide)
-
-### Metrics
-- `egress_guard_ml_preclf_load_total{status}` (success/fail)  
-- `egress_guard_ml_preclf_shadow_total{ml_pred,heuristic,final}` (disagreements)  
-- Existing context/blocked/rule metrics remain
 
 ---
 
@@ -97,55 +78,17 @@ export SHADOW_MODE=true
 
 ---
 
-## Configuration Reference
+## Deferred to Sprint 5
 
-### Security Settings
-```bash
-# Authentication
-export REQUIRE_API_KEY=true
-export API_KEY="your-secret-key"
-
-# DoS Protection
-export MAX_REQUEST_SIZE_BYTES=524288  # 512KB
-export REQUEST_TIMEOUT_SECONDS=30
-export MAX_CONCURRENT_GUARD_REQUESTS=10
-
-# Model Integrity
-export ENFORCE_MODEL_INTEGRITY=true
-
-# Policy Controls
-export ALLOW_EXPLAIN_ONLY_BYPASS=false
-```
-
-### Observability Stack
-```bash
-docker compose up -d
-# Prometheus: http://localhost:9090
-# Grafana: http://localhost:3000 (admin/admin)
-```
-
----
-
-## Future Work (Sprint 5+)
-
-| Item | Priority |
-|------|----------|
-| SIEM/alert integrations (Splunk, Elastic, webhooks) | Medium |
-| Streaming support for chat interfaces | Medium |
-| Regression corpus expansion (multilingual) | Low |
-| CI enforcement of model checksum | Low |
+| Item | Reason |
+|------|--------|
+| Grafana dashboards for ML/context metrics | Requires dashboard setup (external) |
+| CI checksum enforcement | Requires CI pipeline updates |
 
 ---
 
 ## Summary
-Sprint 4 completes:
-- ML pre-classifier training, integration, and shadow-mode instrumentation
-- Comprehensive security hardening aligned with OWASP Top 10 (2021)
-- Full observability stack with Prometheus + Grafana dashboards
-- Model integrity verification and policy downgrade controls
-
-The system is production-ready with configurable security controls, real-time metrics visualization, and ML-enhanced detection.
+Sprint 4 completes ML pre-classifier training, integration, observability (load/shadow metrics), and model integrity checks. The system is ready to run ML in production behind a feature flag, with shadow mode available for safe comparison to heuristic logic. Remaining tasks (dashboards, CI checksum) are scheduled for Sprint 5.
 
 **Sprint 4 Status:** ✅ COMPLETE  
-**Next (Sprint 5):** SIEM integrations, streaming support, and tuning based on production metrics.
-
+**Next (Sprint 5):** Dashboards, security hardening, and tuning based on shadow-mode findings.

@@ -1,10 +1,10 @@
 # Notes for Future Sprints
 
-> **Updated:** Dec 17, 2025 — Reflects completion of Sprint 4 (ML pre-classifier, security hardening, observability stack).
+> **Updated:** Dec 22, 2025 — Reflects completion of Sprint 5 (observability stack, security hardening).
 
 ---
 
-## ✅ Completed Items (Sprint 3-4)
+## ✅ Completed Items (Sprint 3-5)
 
 ### Context-Aware Parser Segmentation (Sprint 3)
 - ✅ `app/parser.py` emits `text/code/link` segments with metadata
@@ -19,22 +19,34 @@
 - ✅ Shadow mode: `SHADOW_MODE=true` logs ML vs heuristic disagreements
 - ✅ Model manifest + checksum verification (`scripts/check_preclf_model.py`)
 
-### Security Hardening - OWASP (Sprint 4)
+### Observability Stack (Sprint 5)
+- ✅ Prometheus integration with 15s scrape interval
+- ✅ Grafana with auto-provisioned datasources and dashboards
+- ✅ Dashboard panels: Request Rate, Block Rate, Latency, Rule Hits, Context Distribution
+- ✅ Setup guide: `docs/observability-setup.md`
+
+### Security Hardening - OWASP (Sprint 5)
 - ✅ **Authentication (A01/A05):** API key gate (`REQUIRE_API_KEY`, `API_KEY`)
 - ✅ **DoS Protection (A11):** Request size limits, timeouts, concurrency control
 - ✅ **Model Integrity (A08):** SHA256 verification before loading ML artifacts
 - ✅ **Policy Controls (A04):** `ALLOW_EXPLAIN_ONLY_BYPASS` prevents bypasses
 - ✅ **Security Assessment:** `reports/security_assessment_owasp.md`
 
-### Observability Stack (Sprint 4)
-- ✅ Prometheus integration with 15s scrape interval
-- ✅ Grafana with auto-provisioned datasources and dashboards
-- ✅ Dashboard panels: Request Rate, Block Rate, Latency, Rule Hits, Context Distribution
-- ✅ Setup guide: `docs/observability-setup.md`
-
 ---
 
-## 🔄 Remaining Work (Sprint 5+)
+## 🔄 Remaining Work (Sprint 6+)
+
+### Demo Package (Priority: High)
+Goal: 4 scenario scripts with screenshots/video for demonstrations.
+
+| Task | Description |
+|------|-------------|
+| `DEMO-01` | Email masking demo script |
+| `DEMO-02` | JWT blocking demo script |
+| `DEMO-03` | `curl\|bash` blocking + safe message demo |
+| `DEMO-04` | Base64/hex exfil blocking demo |
+
+Exit criteria: 4 runnable scripts, terminal output or screenshots.
 
 ### SIEM / Alert Integrations (Priority: Medium)
 Goal: Push rule hits/blocks to Splunk/ELK/webhooks for SOC visibility.
@@ -112,12 +124,12 @@ docker compose up -d
 
 ---
 
-## 🎯 Sprint 5 Focus
+## 🎯 Sprint 6 Focus
 
-1. **SIEM Integration** — Enable SOC visibility via Splunk/Elastic/webhooks
-2. **Streaming Support** — Handle chat interfaces gracefully
+1. **Demo Package** — 4 scenario scripts for demonstrations
+2. **SIEM Integration** — Enable SOC visibility via Splunk/Elastic/webhooks
 3. **Production Tuning** — Based on shadow-mode findings and Grafana metrics
 
 ---
 
-*Last updated: Dec 17, 2025*
+*Last updated: Dec 22, 2025*
