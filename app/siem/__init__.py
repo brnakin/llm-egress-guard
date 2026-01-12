@@ -38,7 +38,3 @@ __all__ = [
     "ElasticsearchConnector",
     "WebhookConnector",
 ]
-
-
-
-

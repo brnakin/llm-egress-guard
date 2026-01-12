@@ -103,7 +103,9 @@ def _run_golden_suite(
             expected_rules = sorted(expected.rule_ids)
 
             if result.blocked != expected.blocked:
-                failures.append(f"{rel_path}: blocked={result.blocked} (expected {expected.blocked})")
+                failures.append(
+                    f"{rel_path}: blocked={result.blocked} (expected {expected.blocked})"
+                )
 
             if actual_rules != expected_rules:
                 failures.append(f"{rel_path}: rules {actual_rules} != expected {expected_rules}")
@@ -170,7 +172,9 @@ def _run_matrix_reports(settings: Settings, json_path: Path, markdown_path: Path
         if scenario in seen:
             continue
         seen.add(scenario)
-        note = analyst_notes.get(scenario, "Review context with tenant; no automated action defined.")
+        note = analyst_notes.get(
+            scenario, "Review context with tenant; no automated action defined."
+        )
         lines.append(f"- **{scenario}** – {note}")
 
     lines.extend(

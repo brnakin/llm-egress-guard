@@ -21,9 +21,9 @@ _POLICY_LOCK = RLock()
 # Default context settings for risk adjustment
 DEFAULT_CONTEXT_SETTINGS = {
     "enabled": True,
-    "code_block_penalty": 15,      # Reduce risk score by 15 for findings in code blocks
-    "explain_only_penalty": 25,    # Reduce risk score by 25 for educational context
-    "link_context_bonus": 5,       # Increase risk by 5 for URLs in links (clickable)
+    "code_block_penalty": 15,  # Reduce risk score by 15 for findings in code blocks
+    "explain_only_penalty": 25,  # Reduce risk score by 25 for educational context
+    "link_context_bonus": 5,  # Increase risk by 5 for URLs in links (clickable)
 }
 
 
@@ -145,9 +145,7 @@ def _parse_allowlist(
     parsed: list[AllowlistEntry] = []
     for raw in entries:
         if isinstance(raw, str):
-            parsed.append(
-                AllowlistEntry(value=raw, tenants=set(default_tenants or set()))
-            )
+            parsed.append(AllowlistEntry(value=raw, tenants=set(default_tenants or set())))
             continue
         if not isinstance(raw, dict):
             raise ValueError(f"Unsupported allowlist entry type: {type(raw)!r}")
@@ -211,9 +209,7 @@ def _collect_allowlist_entries(content: dict[str, Any]) -> list[AllowlistEntry]:
                 entries_list = list(tenant_entries)
             else:
                 entries_list = [tenant_entries]
-            combined.extend(
-                _parse_allowlist(entries_list, default_tenants={str(tenant)})
-            )
+            combined.extend(_parse_allowlist(entries_list, default_tenants={str(tenant)}))
     else:
         raise ValueError("tenant_allowlist must be a mapping of tenant -> entries")
 
@@ -265,15 +261,21 @@ def load_policy(path: Path, *, use_cache: bool = True) -> PolicyStore:
         raw_context = content.get("context_settings", {}) or {}
         context_settings = ContextSettings(
             enabled=raw_context.get("enabled", DEFAULT_CONTEXT_SETTINGS["enabled"]),
-            code_block_penalty=int(raw_context.get(
-                "code_block_penalty", DEFAULT_CONTEXT_SETTINGS["code_block_penalty"]
-            )),
-            explain_only_penalty=int(raw_context.get(
-                "explain_only_penalty", DEFAULT_CONTEXT_SETTINGS["explain_only_penalty"]
-            )),
-            link_context_bonus=int(raw_context.get(
-                "link_context_bonus", DEFAULT_CONTEXT_SETTINGS["link_context_bonus"]
-            )),
+            code_block_penalty=int(
+                raw_context.get(
+                    "code_block_penalty", DEFAULT_CONTEXT_SETTINGS["code_block_penalty"]
+                )
+            ),
+            explain_only_penalty=int(
+                raw_context.get(
+                    "explain_only_penalty", DEFAULT_CONTEXT_SETTINGS["explain_only_penalty"]
+                )
+            ),
+            link_context_bonus=int(
+                raw_context.get(
+                    "link_context_bonus", DEFAULT_CONTEXT_SETTINGS["link_context_bonus"]
+                )
+            ),
         )
 
         definitions[policy_id] = PolicyDefinition(
@@ -383,9 +385,7 @@ def evaluate(
 
         # Apply context-based risk adjustment
         base_weight = max(rule.risk_weight, 0)
-        adjusted_weight = _apply_context_adjustment(
-            finding, base_weight, context_settings
-        )
+        adjusted_weight = _apply_context_adjustment(finding, base_weight, context_settings)
         risk_score += adjusted_weight
 
         # Block decisions can be downgraded for educational/explain-only content

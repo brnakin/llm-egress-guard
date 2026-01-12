@@ -199,9 +199,7 @@ class SplunkConnector(BaseSIEMConnector):
             return False
 
         # Format events for HEC (newline-delimited JSON)
-        payload = "\n".join(
-            json.dumps(self._format_event(e)) for e in events
-        )
+        payload = "\n".join(json.dumps(self._format_event(e)) for e in events)
 
         # Ensure URL ends with correct path
         url = self.config.splunk_url.rstrip("/")
@@ -377,7 +375,3 @@ class WebhookConnector(BaseSIEMConnector):
             return True
 
         return False
-
-
-
-

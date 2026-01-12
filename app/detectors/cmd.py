@@ -13,14 +13,20 @@ from . import common
 
 CURL_PIPE_REGEX = re.compile(r"\bcurl\s+[^\n|]+?\|\s*(?:sh|bash)\b", re.IGNORECASE)
 WGET_PIPE_REGEX = re.compile(r"\bwget\s+[^\n|]+?\|\s*(?:sh|bash)\b", re.IGNORECASE)
-POWERSHELL_ENC_REGEX = re.compile(r"\bpowershell(?:\.exe)?\s+-enc(?:odedcommand)?\s+[A-Za-z0-9+/=]+", re.IGNORECASE)
+POWERSHELL_ENC_REGEX = re.compile(
+    r"\bpowershell(?:\.exe)?\s+-enc(?:odedcommand)?\s+[A-Za-z0-9+/=]+", re.IGNORECASE
+)
 INVOKE_WEBREQUEST_REGEX = re.compile(
     r"\binvoke-webrequest\s+[^\n;]+?(?:\|\s*iex|\|\s*invoke-expression)", re.IGNORECASE
 )
-POWERSHELL_IWR_REGEX = re.compile(r"\b(?:invoke-webrequest|iwr)\s+[^\n]+\|\s*powershell", re.IGNORECASE)
+POWERSHELL_IWR_REGEX = re.compile(
+    r"\b(?:invoke-webrequest|iwr)\s+[^\n]+\|\s*powershell", re.IGNORECASE
+)
 RM_RF_REGEX = re.compile(r"\brm\s+-rf\s+/(?:\S*)", re.IGNORECASE)
 REG_ADD_REGEX = re.compile(r"\breg\s+add\s+[^\n]+", re.IGNORECASE)
-CERTUTIL_REGEX = re.compile(r"\bcertutil\.exe?\s+-urlcache(?:\s+-split)?\s+-f\s+[^\s]+", re.IGNORECASE)
+CERTUTIL_REGEX = re.compile(
+    r"\bcertutil\.exe?\s+-urlcache(?:\s+-split)?\s+-f\s+[^\s]+", re.IGNORECASE
+)
 MSHTA_REGEX = re.compile(r"\bmshta\.exe?\s+[^\s]+", re.IGNORECASE)
 RUNDLL32_REGEX = re.compile(r"\brundll32\.exe?\s+[^\s,]+,[^\s]+", re.IGNORECASE)
 

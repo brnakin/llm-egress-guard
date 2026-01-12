@@ -15,6 +15,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class ConnectorType(str, Enum):
     """Supported SIEM connector types."""
+
     SPLUNK = "splunk"
     ELASTICSEARCH = "elasticsearch"
     WEBHOOK = "webhook"
@@ -118,14 +119,12 @@ class SIEMConfig(BaseSettings):
             if not self.elastic_url:
                 errors.append("SIEM_ELASTIC_URL is required for Elasticsearch connector")
             if not self.elastic_api_key and not (self.elastic_username and self.elastic_password):
-                errors.append("SIEM_ELASTIC_API_KEY or username/password required for Elasticsearch")
+                errors.append(
+                    "SIEM_ELASTIC_API_KEY or username/password required for Elasticsearch"
+                )
 
         elif self.connector_type == ConnectorType.WEBHOOK:
             if not self.webhook_url:
                 errors.append("SIEM_WEBHOOK_URL is required for Webhook connector")
 
         return errors
-
-
-
-

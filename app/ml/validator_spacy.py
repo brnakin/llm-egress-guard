@@ -60,6 +60,7 @@ ENTITY_MAPPINGS: dict[str, EntityType] = {
 @dataclass
 class ValidationResult:
     """Result of validating a PII span."""
+
     text: str
     expected_type: str
     is_valid: bool
@@ -109,6 +110,7 @@ class SpacyValidator:
 
         try:
             import spacy
+
             nlp = spacy.load(model_name)
             self._nlp_models[lang] = nlp
             logger.info("spacy_model_loaded", language=lang, model=model_name)

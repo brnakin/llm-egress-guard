@@ -173,7 +173,7 @@ class TestFencedCodeBlockParsing:
 
         # Verify the segment's span in original text
         seg = code_segments[0]
-        assert text[seg.start:seg.end] == "```python\ncode\n```"
+        assert text[seg.start : seg.end] == "```python\ncode\n```"
 
 
 class TestInlineCodeParsing:
@@ -327,9 +327,9 @@ class TestExplainOnlyDetection:
 
         code_segments = [s for s in parsed.segments if s.type == "code"]
         assert len(code_segments) == 1
-        assert code_segments[0].explain_only is True, (
-            f"Keyword '{keyword}' should trigger explain-only"
-        )
+        assert (
+            code_segments[0].explain_only is True
+        ), f"Keyword '{keyword}' should trigger explain-only"
 
 
 class TestOffsetPreservation:
@@ -513,4 +513,3 @@ This command downloads and executes arbitrary code, which is very unsafe.
         metadata = {"tenant": "acme", "request_id": "123"}
         parsed = parse_content("text", metadata=metadata)
         assert parsed.metadata == metadata
-

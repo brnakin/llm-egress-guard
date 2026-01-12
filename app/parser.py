@@ -31,41 +31,43 @@ RAW_URL_REGEX = re.compile(
 )
 
 # Educational keywords for explain-only detection
-EDUCATIONAL_KEYWORDS = frozenset({
-    # Explicit warnings
-    "example",
-    "avoid",
-    "never",
-    "dangerous",
-    "warning",
-    "caution",
-    # Instructional
-    "don't",
-    "do not",
-    "tutorial",
-    "demonstrates",
-    "here's how",
-    "here is how",
-    "shows how",
-    "learn",
-    "explain",
-    "explanation",
-    # Negative examples
-    "do not run",
-    "malicious",
-    "unsafe",
-    "insecure",
-    "vulnerable",
-    "attack",
-    "exploit",
-    # Educational context
-    "for educational",
-    "for learning",
-    "bad practice",
-    "anti-pattern",
-    "antipattern",
-    "what not to do",
-})
+EDUCATIONAL_KEYWORDS = frozenset(
+    {
+        # Explicit warnings
+        "example",
+        "avoid",
+        "never",
+        "dangerous",
+        "warning",
+        "caution",
+        # Instructional
+        "don't",
+        "do not",
+        "tutorial",
+        "demonstrates",
+        "here's how",
+        "here is how",
+        "shows how",
+        "learn",
+        "explain",
+        "explanation",
+        # Negative examples
+        "do not run",
+        "malicious",
+        "unsafe",
+        "insecure",
+        "vulnerable",
+        "attack",
+        "exploit",
+        # Educational context
+        "for educational",
+        "for learning",
+        "bad practice",
+        "anti-pattern",
+        "antipattern",
+        "what not to do",
+    }
+)
 
 # Context window for explain-only detection (characters before/after segment)
 CONTEXT_WINDOW_SIZE = 200
@@ -229,12 +231,18 @@ def _detect_explain_only(
             ml_pred = None
 
     # Shadow mode: record disagreements between ML and heuristic
-    if shadow_mode and ml_pred is not None and ml_pred not in ("educational", "explain_only", "text", "command", "executable", "malicious"):
+    if (
+        shadow_mode
+        and ml_pred is not None
+        and ml_pred
+        not in ("educational", "explain_only", "text", "command", "executable", "malicious")
+    ):
         # If ML returns something unexpected, still log it with final decision
         pass
     if shadow_mode and ml_pred is not None:
         try:
             from app import metrics
+
             metrics.observe_ml_shadow(
                 ml_pred=str(ml_pred),
                 heuristic="educational" if heuristic_result else "command",
@@ -301,9 +309,7 @@ def _parse_raw_urls(text: str, exclude_ranges: list[tuple[int, int]]) -> list[tu
     for match in RAW_URL_REGEX.finditer(text):
         start, end = match.start(), match.end()
         # Skip if this URL is inside an excluded range
-        in_excluded = any(
-            ex_start <= start < ex_end for ex_start, ex_end in exclude_ranges
-        )
+        in_excluded = any(ex_start <= start < ex_end for ex_start, ex_end in exclude_ranges)
         if not in_excluded:
             results.append((start, end, match.group(0)))
     return results

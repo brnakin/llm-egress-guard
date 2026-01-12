@@ -12,7 +12,9 @@ from app.policy import PolicyDefinition, PolicyRule
 
 from . import common
 
-IP_URL_REGEX = re.compile(r"\bhttps?://(?:\d{1,3}\.){3}\d{1,3}(?::\d{1,5})?(?:/[^\s]*)?", re.IGNORECASE)
+IP_URL_REGEX = re.compile(
+    r"\bhttps?://(?:\d{1,3}\.){3}\d{1,3}(?::\d{1,5})?(?:/[^\s]*)?", re.IGNORECASE
+)
 DATA_URL_REGEX = re.compile(r"\bdata:[^,\s]{1,100},[^\s]+", re.IGNORECASE)
 EXECUTABLE_URL_REGEX = re.compile(
     r"\b(?:https?|ftp)://[^\s]+?\.(?:exe|msi|bat|cmd|ps1|psm1|js|scr|vbs|jar|zip|tgz|tar\.gz|sh|dll)(?:[?#][^\s]*)?",

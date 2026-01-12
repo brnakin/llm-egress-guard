@@ -72,9 +72,7 @@ def _annotate_findings_with_context(
         span = finding.detail.get("span")
         if span and len(span) >= 2:
             start, end = span[0], span[1]
-            context_type, explain_only = parser.get_context_for_finding(
-                start, end, parsed
-            )
+            context_type, explain_only = parser.get_context_for_finding(start, end, parsed)
             finding.context = context_type
             finding.explain_only = explain_only
         # If no span available, default to text context (already set)
@@ -168,18 +166,20 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
     else:
         parsed = parser.ParsedContent(
             text=normalized.text,
-            segments=[
-                parser.Segment(
-                    type="text",
-                    content=normalized.text,
-                    start=0,
-                    end=len(normalized.text),
-                    metadata={},
-                    explain_only=False,
-                )
-            ]
-            if normalized.text
-            else [],
+            segments=(
+                [
+                    parser.Segment(
+                        type="text",
+                        content=normalized.text,
+                        start=0,
+                        end=len(normalized.text),
+                        metadata={},
+                        explain_only=False,
+                    )
+                ]
+                if normalized.text
+                else []
+            ),
             metadata=guard_request.metadata or {},
         )
 

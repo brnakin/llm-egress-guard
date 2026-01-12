@@ -16,11 +16,17 @@ IBAN_TR_REGEX = re.compile(r"\bTR\d{2}(?:\s*\d{4}){5}\s*\d{2}\b", re.IGNORECASE)
 IBAN_DE_REGEX = re.compile(r"\bDE\d{2}(?:\s*\d{4}){4}\s*\d{2}\b", re.IGNORECASE)
 TCKN_REGEX = re.compile(r"\b\d{11}\b")
 PAN_REGEX = re.compile(r"(?<!\d)(?:[3456]\d[\s-]?)(?:\d[\s-]?){12,18}(?!\d)")
-IPV4_REGEX = re.compile(r"\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b")
+IPV4_REGEX = re.compile(
+    r"\b(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\b"
+)
 
 PHONE_PATTERNS: dict[str, re.Pattern[str]] = {
-    "phone_tr": re.compile(r"\b(?:\+?90|0)?\s?(?:5\d{2}|[2348]\d{2})[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}\b"),
-    "phone_en": re.compile(r"\b(?:\+?1|\+?44)?[-.\s]?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b"),
+    "phone_tr": re.compile(
+        r"\b(?:\+?90|0)?\s?(?:5\d{2}|[2348]\d{2})[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}\b"
+    ),
+    "phone_en": re.compile(
+        r"\b(?:\+?1|\+?44)?[-.\s]?(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}\b"
+    ),
     "phone_de": re.compile(r"\b(?:\+?49)?[\s-]?(?:\(0\))?(?:1\d{2}|[2-9]\d{1,3})[\s-]?\d{3,8}\b"),
     "phone_fr": re.compile(r"\b(?:\+?33|0)[\s.-]?[1-9](?:[\s.-]?\d{2}){4}\b"),
     "phone_es": re.compile(r"\b(?:\+?34)?\s?(?:[67]\d{2}|9\d{2})\s?\d{3}\s?\d{3}\b"),
@@ -79,7 +85,9 @@ def _scan_emails(text: str) -> list[tuple[str, tuple[int, int], dict[str, Any]]]
     return results
 
 
-def _scan_phone(text: str, *, pattern_key: str) -> list[tuple[str, tuple[int, int], dict[str, Any]]]:
+def _scan_phone(
+    text: str, *, pattern_key: str
+) -> list[tuple[str, tuple[int, int], dict[str, Any]]]:
     pattern = PHONE_PATTERNS.get(pattern_key) or PHONE_PATTERNS["phone"]
     results: list[tuple[str, tuple[int, int], dict[str, Any]]] = []
     for match in pattern.finditer(text):

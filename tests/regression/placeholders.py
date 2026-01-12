@@ -115,15 +115,21 @@ def _jwt_token(subject: str) -> str:
         "tenant": "acme",
         "scope": "read:all write:limited",
     }
-    header_b64 = base64.urlsafe_b64encode(
-        json.dumps(header, separators=(",", ":")).encode()
-    ).decode().rstrip("=")
-    payload_b64 = base64.urlsafe_b64encode(
-        json.dumps(payload, separators=(",", ":")).encode()
-    ).decode().rstrip("=")
-    signature = base64.urlsafe_b64encode(
-        f"sig:{subject}:demo-signature-verify-hash".encode()
-    ).decode().rstrip("=")
+    header_b64 = (
+        base64.urlsafe_b64encode(json.dumps(header, separators=(",", ":")).encode())
+        .decode()
+        .rstrip("=")
+    )
+    payload_b64 = (
+        base64.urlsafe_b64encode(json.dumps(payload, separators=(",", ":")).encode())
+        .decode()
+        .rstrip("=")
+    )
+    signature = (
+        base64.urlsafe_b64encode(f"sig:{subject}:demo-signature-verify-hash".encode())
+        .decode()
+        .rstrip("=")
+    )
     return ".".join([header_b64, payload_b64, signature])
 
 

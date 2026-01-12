@@ -115,9 +115,7 @@ def _safe_messages() -> dict[str, dict[str, str]]:
         parsed: dict[str, dict[str, str]] = {}
     else:
         parsed = {
-            str(key): value
-            for key, value in safe_messages.items()
-            if isinstance(value, dict)
+            str(key): value for key, value in safe_messages.items() if isinstance(value, dict)
         }
 
     with _SAFE_MESSAGES_LOCK:

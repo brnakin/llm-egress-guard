@@ -121,6 +121,7 @@ def observe_ml_shadow(ml_pred: str, heuristic: str, final: str) -> None:
     """Track disagreements between ML prediction and heuristic (shadow mode)."""
     ML_PRECLF_SHADOW_TOTAL.labels(ml_pred=ml_pred, heuristic=heuristic, final=final).inc()
 
+
 def render_metrics() -> tuple[bytes, str]:
     payload = generate_latest(REGISTRY)
     return payload, CONTENT_TYPE_LATEST
