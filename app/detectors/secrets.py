@@ -5,8 +5,8 @@ from __future__ import annotations
 import base64
 import math
 import re
-from collections.abc import Sequence
-from typing import Any, Callable
+from collections.abc import Callable, Sequence
+from typing import Any
 
 from app.pipeline import Finding
 from app.policy import PolicyDefinition, PolicyRule

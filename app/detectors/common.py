@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import base64
+import ipaddress
 import json
 import re
+from collections.abc import Iterable
 from hashlib import sha256
-from typing import Any, Iterable
-
-import ipaddress
+from typing import Any
 
 from app.pipeline import Finding
 from app.policy import PolicyDefinition, PolicyRule
@@ -127,7 +127,7 @@ def is_structured_jwt(token: str) -> bool:
     if not isinstance(payload, dict):
         return False
     exp = payload.get("exp")
-    if exp is not None and not isinstance(exp, (int, float)):
+    if exp is not None and not isinstance(exp, int | float):
         return False
     return True
 

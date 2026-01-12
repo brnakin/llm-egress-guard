@@ -16,19 +16,19 @@ Usage:
         splunk_url="https://splunk.example.com:8088",
         splunk_token="your-hec-token",
     )
-    
+
     manager = SIEMManager(config)
     await manager.send_event(finding)
 """
 
 from app.siem.config import SIEMConfig
-from app.siem.manager import SIEMManager
 from app.siem.connectors import (
     BaseSIEMConnector,
-    SplunkConnector,
     ElasticsearchConnector,
+    SplunkConnector,
     WebhookConnector,
 )
+from app.siem.manager import SIEMManager
 
 __all__ = [
     "SIEMConfig",

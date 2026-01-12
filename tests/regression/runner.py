@@ -4,21 +4,20 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import dataclass
-from datetime import datetime, timezone
-from pathlib import Path
 import os
 import sys
-from typing import Any
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from app.pipeline import GuardRequest, run_pipeline
-from app.settings import Settings
-from tests.regression.detector_matrix import SCENARIOS, run_matrix
-from tests.regression.placeholders import apply_placeholders
+from app.pipeline import GuardRequest, run_pipeline  # noqa: E402
+from app.settings import Settings  # noqa: E402
+from tests.regression.detector_matrix import run_matrix  # noqa: E402
+from tests.regression.placeholders import apply_placeholders  # noqa: E402
 
 
 @dataclass(slots=True)
@@ -150,7 +149,7 @@ def _run_matrix_reports(settings: Settings, json_path: Path, markdown_path: Path
     lines = [
         "# Detector Matrix Analysis",
         "",
-        f"_Generated at {datetime.now(timezone.utc).isoformat()}Z_",
+        f"_Generated at {datetime.now(UTC).isoformat()}Z_",
         "",
         "| Scenario | Blocked | Risk | Rules | Actions | Notes |",
         "|----------|---------|------|-------|---------|-------|",
@@ -193,9 +192,11 @@ def _run_matrix_reports(settings: Settings, json_path: Path, markdown_path: Path
         for finding in findings:
             detail = finding.get("detail") or {}
             preview = detail.get("preview") or "-"
-            lines.append(
-                f"| {payload['scenario']} | {finding.get('rule_id')} | {finding.get('action')} | {finding.get('type')} | {preview} | {meta_str} |"
+            line = (
+                f"| {payload['scenario']} | {finding.get('rule_id')} | "
+                f"{finding.get('action')} | {finding.get('type')} | {preview} | {meta_str} |"
             )
+            lines.append(line)
 
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
     markdown_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -223,7 +224,7 @@ def _write_golden(path: Path, records: list[dict[str, object]]) -> None:
 def _write_manifest(path: Path, sample_count: int) -> None:
     manifest = {
         "version": "v1.4",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "samples": sample_count,
         "notes": "Updated for spaCy validator defaults and expanded regression corpus.",
     }

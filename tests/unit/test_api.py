@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from fastapi.testclient import TestClient
-
 from app.main import create_app
+from fastapi.testclient import TestClient
 
 
 def get_client() -> TestClient:
@@ -24,7 +23,11 @@ def test_guard_masks_email() -> None:
 
 def test_guard_blocks_jwt_with_safe_message() -> None:
     client = get_client()
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+    token = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
+        "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0."
+        "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+    )
     resp = client.post("/guard", json={"response": f"Token: {token}"})
     body = resp.json()
 

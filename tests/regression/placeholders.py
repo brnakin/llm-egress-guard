@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import base64
 import json
+from collections.abc import Callable
 from hashlib import sha256
-from typing import Callable, Dict
 
 
 def _concat(*parts: str) -> str:
@@ -127,7 +127,7 @@ def _jwt_token(subject: str) -> str:
     return ".".join([header_b64, payload_b64, signature])
 
 
-PLACEHOLDER_FACTORIES: Dict[str, Callable[[], str]] = {
+PLACEHOLDER_FACTORIES: dict[str, Callable[[], str]] = {
     "{{STRIPE_KEY}}": _stripe_key,
     "{{TWILIO_KEY}}": _twilio_key,
     "{{SLACK_TOKEN}}": _slack_token,
@@ -146,7 +146,7 @@ PLACEHOLDER_FACTORIES: Dict[str, Callable[[], str]] = {
     "{{JWT_SAMPLE_TOKEN}}": lambda: _jwt_token("sample-user"),
 }
 
-PLACEHOLDER_CACHE: Dict[str, str] = {}
+PLACEHOLDER_CACHE: dict[str, str] = {}
 
 
 def apply_placeholders(text: str) -> str:

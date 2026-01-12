@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+import math
 import re
 from collections.abc import Sequence
 from typing import Any
-
-import math
 
 from app.pipeline import Finding
 from app.policy import PolicyDefinition, PolicyRule

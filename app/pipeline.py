@@ -112,7 +112,7 @@ def _validate_pii_findings(
             continue
 
         span = (finding.detail or {}).get("span")
-        if not isinstance(span, (list, tuple)) or len(span) < 2:
+        if not isinstance(span, list | tuple) or len(span) < 2:
             validated.append(finding)
             continue
 

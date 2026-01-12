@@ -181,7 +181,7 @@ def print_output(result: dict[str, Any]) -> None:
     print(f"Status: {status}")
     print(f"Risk Score: {risk_score}")
     print(f"Latency: {latency:.2f}ms")
-    
+
     if findings:
         print(f"\n{Colors.CYAN}Findings:{Colors.ENDC}")
         for f in findings:
@@ -199,20 +199,20 @@ def run_scenario(scenario: DemoScenario, index: int, api_url: str) -> dict[str, 
     """Run a single demo scenario."""
     print_scenario_header(scenario, index)
     print_input(scenario.input_text)
-    
+
     result = call_guard_api(scenario.input_text, api_url)
     print_output(result)
-    
+
     # Verify expected behavior
     findings = result.get("findings", [])
     rule_ids = [f.get("rule_id", "") for f in findings]
-    
+
     if scenario.rule_id in rule_ids or any(scenario.rule_id in r for r in rule_ids):
         print(f"\n{Colors.GREEN}✓ Expected rule '{scenario.rule_id}' was triggered{Colors.ENDC}")
     else:
         print(f"\n{Colors.YELLOW}⚠ Expected rule '{scenario.rule_id}' was NOT triggered")
         print(f"  Found rules: {rule_ids}{Colors.ENDC}")
-    
+
     return result
 
 
@@ -230,7 +230,7 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
         "| Scenario | Status | Rule | Latency |",
         "|----------|--------|------|---------|",
     ]
-    
+
     for name, result in results.items():
         scenario = SCENARIOS[name]
         blocked = result.get("blocked", False)
@@ -239,7 +239,7 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
         rules = ", ".join(f.get("rule_id", "N/A") for f in findings) or "None"
         latency = result.get("latency_ms", 0)
         lines.append(f"| {scenario.name} | {status} | {rules} | {latency:.2f}ms |")
-    
+
     lines.extend([
         "",
         "---",
@@ -247,11 +247,11 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
         "## Detailed Results",
         "",
     ])
-    
+
     for i, (name, result) in enumerate(results.items(), 1):
         scenario = SCENARIOS[name]
         blocked = result.get("blocked", False)
-        
+
         lines.extend([
             f"### Demo {i}: {scenario.name}",
             "",
@@ -272,7 +272,7 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
             "",
             "**Findings:**",
         ])
-        
+
         findings = result.get("findings", [])
         if findings:
             lines.append("")
@@ -282,7 +282,7 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
                 lines.append(f"| {f.get('rule_id', 'N/A')} | {f.get('action', 'N/A')} | {f.get('severity', 'N/A')} |")
         else:
             lines.append("- None")
-        
+
         lines.extend([
             "",
             "**Sanitized Output:**",
@@ -293,7 +293,7 @@ def generate_markdown_report(results: dict[str, dict[str, Any]]) -> str:
             "---",
             "",
         ])
-    
+
     return "\n".join(lines)
 
 
@@ -350,7 +350,7 @@ Examples:
     # Output results
     if args.json:
         print("\n" + json.dumps(results, indent=2))
-    
+
     if args.output:
         report = generate_markdown_report(results)
         args.output.parent.mkdir(parents=True, exist_ok=True)
