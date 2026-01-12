@@ -80,6 +80,58 @@ def _annotate_findings_with_context(
         # If no span available, default to text context (already set)
 
 
+def _validate_pii_findings(
+    findings: list[Finding],
+    parsed: parser.ParsedContent,
+    *,
+    settings: Settings,
+) -> list[Finding]:
+    """Optionally validate PII findings with spaCy to reduce false positives."""
+    if not settings.feature_ml_validator or not findings:
+        return findings
+
+    try:
+        from app.ml.validator_spacy import get_validator
+    except Exception:
+        return findings
+
+    validator = get_validator(languages=["en", "de"])
+    validated: list[Finding] = []
+
+    for finding in findings:
+        if finding.type != "pii":
+            validated.append(finding)
+            continue
+
+        kind = (finding.detail or {}).get("kind")
+        expected_type: str | None = None
+        if kind == "email":
+            expected_type = "EMAIL"
+        else:
+            validated.append(finding)
+            continue
+
+        span = (finding.detail or {}).get("span")
+        if not isinstance(span, (list, tuple)) or len(span) < 2:
+            validated.append(finding)
+            continue
+
+        start, end = int(span[0]), int(span[1])
+        snippet = parsed.text[start:end]
+        result = validator.validate_span(snippet, expected_type)
+        if result.is_valid and result.confidence >= validator.confidence_threshold:
+            validated.append(finding)
+        else:
+            LOGGER.info(
+                "ml_validator_rejected",
+                rule_id=getattr(finding, "rule_id", "?"),
+                kind=kind,
+                snippet_hash=(finding.detail or {}).get("snippet_hash"),
+            )
+
+    return validated
+
+
 def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> PipelineResult:
     """Execute the guard pipeline for a single response."""
 
@@ -105,13 +157,31 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
             metrics.observe_ml_preclf_load(status="fail")
             ml_preclassifier = None  # Fall back to heuristic inside parser
 
-    parsed = parser.parse_content(
-        normalized.text,
-        metadata=guard_request.metadata,
-        ml_preclassifier=ml_preclassifier,
-        shadow_mode=settings.shadow_mode,
-        detect_explain_only_enabled=True,
-    )
+    if settings.feature_context_parsing:
+        parsed = parser.parse_content(
+            normalized.text,
+            metadata=guard_request.metadata,
+            ml_preclassifier=ml_preclassifier,
+            shadow_mode=settings.shadow_mode,
+            detect_explain_only_enabled=True,
+        )
+    else:
+        parsed = parser.ParsedContent(
+            text=normalized.text,
+            segments=[
+                parser.Segment(
+                    type="text",
+                    content=normalized.text,
+                    start=0,
+                    end=len(normalized.text),
+                    metadata={},
+                    explain_only=False,
+                )
+            ]
+            if normalized.text
+            else [],
+            metadata=guard_request.metadata or {},
+        )
 
     loaded_policy = policy.load_policy(settings.policy_path)
     policy_view = policy.select_policy(loaded_policy, guard_request.policy_id)
@@ -142,6 +212,8 @@ def run_pipeline(guard_request: GuardRequest, *, settings: Settings) -> Pipeline
         findings.extend(detector_findings)
         if any(finding.action == "block" for finding in detector_findings):
             break
+
+    findings = _validate_pii_findings(findings, parsed, settings=settings)
 
     # Annotate findings with segment context for risk adjustment
     _annotate_findings_with_context(findings, parsed)

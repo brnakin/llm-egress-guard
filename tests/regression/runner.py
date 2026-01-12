@@ -48,6 +48,11 @@ def main() -> None:
         default=Path("tests/regression/artifacts/detector_matrix_analysis.md"),
         help="Path for detector matrix analyst-style summary.",
     )
+    parser.add_argument(
+        "--update-golden",
+        action="store_true",
+        help="Rewrite golden_v1.jsonl and golden_manifest.json with current outputs.",
+    )
     args = parser.parse_args()
 
     corpus_dir = Path(__file__).parent / "corpus_v1"
@@ -57,23 +62,29 @@ def main() -> None:
         raise SystemExit("Golden file not found. Generate it before running regression tests.")
 
     settings = Settings()
-    _run_golden_suite(corpus_dir, golden_file, settings)
+    _run_golden_suite(corpus_dir, golden_file, settings, update_golden=args.update_golden)
 
     if args.matrix_report:
         _run_matrix_reports(settings, args.matrix_json, args.matrix_markdown)
 
 
-def _run_golden_suite(corpus_dir: Path, golden_file: Path, settings: Settings) -> None:
+def _run_golden_suite(
+    corpus_dir: Path,
+    golden_file: Path,
+    settings: Settings,
+    *,
+    update_golden: bool = False,
+) -> None:
     golden = _load_golden(golden_file)
     failures: list[str] = []
     processed = 0
+    new_records: list[dict[str, object]] = []
 
     for sample_path in sorted(corpus_dir.rglob("*.txt")):
         rel_path = sample_path.relative_to(corpus_dir).as_posix()
         expected = golden.get(rel_path)
-        if not expected:
+        if not expected and not update_golden:
             failures.append(f"Missing golden expectation for {rel_path}")
-            continue
 
         text = sample_path.read_text(encoding="utf-8")
         text = apply_placeholders(text)
@@ -81,24 +92,39 @@ def _run_golden_suite(corpus_dir: Path, golden_file: Path, settings: Settings) -
         processed += 1
 
         actual_rules = sorted(f.rule_id for f in result.findings)
-        expected_rules = sorted(expected.rule_ids)
+        new_records.append(
+            {
+                "sample": rel_path,
+                "blocked": bool(result.blocked),
+                "rule_ids": actual_rules,
+            }
+        )
 
-        if result.blocked != expected.blocked:
-            failures.append(f"{rel_path}: blocked={result.blocked} (expected {expected.blocked})")
+        if expected:
+            expected_rules = sorted(expected.rule_ids)
 
-        if actual_rules != expected_rules:
-            failures.append(f"{rel_path}: rules {actual_rules} != expected {expected_rules}")
+            if result.blocked != expected.blocked:
+                failures.append(f"{rel_path}: blocked={result.blocked} (expected {expected.blocked})")
+
+            if actual_rules != expected_rules:
+                failures.append(f"{rel_path}: rules {actual_rules} != expected {expected_rules}")
 
     missing_samples = set(golden) - {
         path.relative_to(corpus_dir).as_posix() for path in corpus_dir.rglob("*.txt")
     }
-    for sample in sorted(missing_samples):
-        failures.append(f"Golden expectation has no sample: {sample}")
+    if not update_golden:
+        for sample in sorted(missing_samples):
+            failures.append(f"Golden expectation has no sample: {sample}")
 
-    if failures:
+    if failures and not update_golden:
         raise SystemExit("Regression mismatches:\n" + "\n".join(failures))
 
-    print(f"Regression suite passed for {processed} samples.")
+    if update_golden:
+        _write_golden(golden_file, new_records)
+        _write_manifest(golden_file.parent / "golden_manifest.json", len(new_records))
+        print(f"Golden files updated for {processed} samples.")
+    else:
+        print(f"Regression suite passed for {processed} samples.")
 
 
 def _run_matrix_reports(settings: Settings, json_path: Path, markdown_path: Path) -> None:
@@ -188,6 +214,20 @@ def _load_golden(path: Path) -> dict[str, GoldenExpectation]:
             rule_ids=list(payload.get("rule_ids", [])),
         )
     return expectations
+
+
+def _write_golden(path: Path, records: list[dict[str, object]]) -> None:
+    path.write_text("\n".join(json.dumps(record) for record in records) + "\n", encoding="utf-8")
+
+
+def _write_manifest(path: Path, sample_count: int) -> None:
+    manifest = {
+        "version": "v1.4",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "samples": sample_count,
+        "notes": "Updated for spaCy validator defaults and expanded regression corpus.",
+    }
+    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

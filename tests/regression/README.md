@@ -6,12 +6,12 @@ This directory contains the corpus and golden outputs used by `tests/regression/
 
 | Category | Count | Examples |
 |----------|-------|----------|
-| `clean`  | 10    | `clean/how-to-stir-fry.txt`, `clean/regex-concept.txt`, `clean/tricky-negative-email.txt` |
-| `pii`    | 21    | `pii/tr-phone-format.txt`, `pii/de-iban.txt`, `pii/pan-spaced.txt`, `pii/mixed-ip-bilingual.txt` |
-| `secrets`| 17    | `secrets/jwt-access.txt`, `secrets/aws-keys.txt`, `secrets/openai-key.txt`, `secrets/pem-private.txt` |
-| `url`    | 15    | `url/data-uri-svg.txt`, `url/cred-in-url.txt`, `url/shortener-link.txt`, `url/suspicious-tld.txt` |
-| `cmd`    | 15    | `cmd/curl-bash.txt`, `cmd/powershell-enc.txt`, `cmd/certutil-dl.txt`, `cmd/reg-add.txt` |
-| `exfil`  | 9     | `exfil/base64-dump.txt`, `exfil/hex-stream.txt`, `exfil/mixed-entropy.txt`, `exfil/safe-csv-like.txt` |
+| `clean`  | 12    | `clean/how-to-stir-fry.txt`, `clean/regex-concept.txt`, `clean/architecture-overview.txt` |
+| `pii`    | 23    | `pii/tr-phone-format.txt`, `pii/de-iban.txt`, `pii/fr-office-contact.txt`, `pii/mixed-ip-bilingual.txt` |
+| `secrets`| 20    | `secrets/jwt-access.txt`, `secrets/openai-project-key.txt`, `secrets/github-high-entropy-token.txt`, `secrets/pem-private.txt` |
+| `url`    | 17    | `url/data-uri-svg.txt`, `url/cred-in-url.txt`, `url/shortener-link.txt`, `url/suspicious-backup-zip.txt` |
+| `cmd`    | 17    | `cmd/curl-bash.txt`, `cmd/powershell-enc.txt`, `cmd/curl-bash-updater.txt`, `cmd/reg-add.txt` |
+| `exfil`  | 11    | `exfil/base64-dump.txt`, `exfil/long-hex-buffer.txt`, `exfil/mixed-entropy.txt`, `exfil/large-base64-dump.txt` |
 
 Each sample is a plain-text file containing an LLM response. File names mirror the `title` field from the synthetic prompt to make cross-referencing easier.
 
@@ -24,6 +24,9 @@ Each sample is a plain-text file containing an LLM response. File names mirror t
   ```bash
   conda activate "LLM Egress Guard"
   python tests/regression/runner.py
+
+  # Regenerate golden file and manifest after adding samples
+  python tests/regression/runner.py --update-golden
   ```
 
   The runner recomputes outputs with the current policy and rewrites `golden_v1.jsonl`. Review diff to ensure rule hits match expectations before committing.

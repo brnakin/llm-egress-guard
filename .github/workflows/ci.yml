@@ -37,3 +37,9 @@ jobs:
         env:
           POLICY_FILE: config/policy.yaml
         run: python tests/regression/runner.py
+
+      - name: Verify pre-classifier checksum
+        run: |
+          python scripts/check_preclf_model.py \
+            --model models/preclf_v1.joblib \
+            --manifest models/preclf_v1.manifest.json

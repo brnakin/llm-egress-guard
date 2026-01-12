@@ -19,7 +19,8 @@ dependencies = [
   "structlog>=24.1,<25",
   "python-json-logger>=2.0,<3",
   "orjson>=3.10,<4",
-  "prometheus-client>=0.20,<1"
+  "prometheus-client>=0.20,<1",
+  "spacy>=3.7,<4"
 ]
 
 [project.optional-dependencies]

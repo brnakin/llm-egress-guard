@@ -1,0 +1,2 @@
+Use this tiny redirect to grab the script: https://t.co/fake-ci-bootstrap
+It should expand to the internal installer, but treat it as suspicious.

@@ -1,0 +1,6 @@
+Configuration checklist for the LLM guard service:
+- Keep policy files in version control with approvals.
+- Use environment variables for secrets.
+- Set timeouts and size limits for every handler.
+- Document default values in README.
+This text intentionally avoids executable commands or URLs.

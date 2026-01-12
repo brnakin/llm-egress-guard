@@ -6,6 +6,14 @@ set -e
 
 API_URL="${API_URL:-http://127.0.0.1:8080/guard}"
 
+# Generate large base64 payload for EXFIL demo
+EXFIL_PAYLOAD=$(python - <<'PY'
+import base64
+payload = ("secret_line_1234567890\n" * 60).encode()
+print(base64.b64encode(payload).decode())
+PY
+)
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -126,7 +134,7 @@ echo ""
 echo -e "${YELLOW}📥 INPUT:${NC}"
 echo "----------------------------------------"
 cat << 'EOF'
-Config: U2VjcmV0S2V5PTEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmCkFXU19BQ0NFU1NfS0VZX0lEPUFLSUE=
+Config: <large base64 payload>
 EOF
 echo "----------------------------------------"
 echo ""
@@ -135,7 +143,7 @@ echo "----------------------------------------"
 curl -s -X POST "$API_URL" \
   -H "Content-Type: application/json" \
   -d '{
-    "response": "Config: U2VjcmV0S2V5PTEyMzQ1Njc4OTBhYmNkZWYxMjM0NTY3ODkwYWJjZGVmCkFXU19BQ0NFU1NfS0VZX0lEPUFLSUE="
+    "response": "Config: '"$EXFIL_PAYLOAD"'"
   }' | jq '.'
 echo "----------------------------------------"
 echo ""
@@ -155,4 +163,6 @@ echo "  4. Base64 Exfil       - Encoded data exfiltration detection"
 echo ""
 echo -e "${CYAN}For more options, use the Python version:${NC}"
 echo "  python scripts/demo_scenarios.py --help"
+
+
 

@@ -1,6 +1,6 @@
 {
-  "version": "v1.3",
-  "generated_at": "2025-11-08T02:31:25Z",
-  "samples": 87,
-  "notes": "PAN detector spacing fix, detector matrix automation, and templated secret samples."
+  "version": "v1.4",
+  "generated_at": "2026-01-12T21:52:19.475766+00:00",
+  "samples": 100,
+  "notes": "Updated for spaCy validator defaults and expanded regression corpus."
 }

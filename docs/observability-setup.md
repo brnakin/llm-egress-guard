@@ -296,6 +296,7 @@ curl -s http://localhost:9090/api/v1/targets | jq '.data.activeTargets[].health'
 | `egress_guard_context_type_total` | Counter | Segment types (text/code/link) |
 | `egress_guard_explain_only_total` | Counter | Educational content detections |
 | `egress_guard_ml_preclf_load_total` | Counter | ML model load status |
+| `egress_guard_ml_preclf_shadow_total` | Counter | ML vs heuristic disagreements |
 
 ### Dashboard Panels
 
@@ -305,6 +306,7 @@ curl -s http://localhost:9090/api/v1/targets | jq '.data.activeTargets[].health'
 4. **Top Rules** - Most frequently triggered rules
 5. **Context Distribution** - Text/Code/Link distribution
 6. **ML Status** - Model load success/error status
+7. **ML Shadow Disagreements** - Count of ML vs heuristic differences (shadow mode)
 
 ---
 
@@ -339,6 +341,12 @@ curl -s http://localhost:8080/metrics | head -20
 ```
 
 **Solution:** Ensure `METRICS_ENABLED=true` is set.
+
+### Issue: ML panels show no data
+
+- Ensure ML flags and paths are set (`FEATURE_ML_PRECLF=true`, `PRECLF_MODEL_PATH`, `PRECLF_MANIFEST_PATH`, `ENFORCE_MODEL_INTEGRITY=true`).
+- Send a few `/guard` requests to emit metrics (e.g., `python scripts/demo_scenarios.py --api-url http://127.0.0.1:8080/guard`).
+- Shadow disagreements require `SHADOW_MODE=true`; without it, only load status appears.
 
 ### Issue: API key error
 

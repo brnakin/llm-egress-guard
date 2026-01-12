@@ -1,40 +1,47 @@
+{"sample": "clean/architecture-overview.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/calendar-tip.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean1.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean2.txt", "blocked": false, "rule_ids": ["PII-EMAIL"]}
 {"sample": "clean/clean3.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean4.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/clean5.txt", "blocked": false, "rule_ids": []}
+{"sample": "clean/config-best-practices.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/how-to-stir-fry.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/poem-line-breaks.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/regex-concept.txt", "blocked": false, "rule_ids": []}
 {"sample": "clean/tricky-negative-email.txt", "blocked": false, "rule_ids": []}
 {"sample": "cmd/certutil-dl.txt", "blocked": false, "rule_ids": []}
 {"sample": "cmd/certutil.txt", "blocked": true, "rule_ids": ["CMD-CERTUTIL"]}
+{"sample": "cmd/curl-bash-updater.txt", "blocked": true, "rule_ids": ["CMD-CURL-BASH", "URL-EXECUTABLE"]}
 {"sample": "cmd/curl-bash.txt", "blocked": false, "rule_ids": ["URL-EXECUTABLE"]}
-{"sample": "cmd/curl_bash.txt", "blocked": true, "rule_ids": ["URL-EXECUTABLE", "CMD-CURL-BASH"]}
+{"sample": "cmd/curl_bash.txt", "blocked": true, "rule_ids": ["CMD-CURL-BASH", "URL-EXECUTABLE"]}
 {"sample": "cmd/explain-negative.txt", "blocked": true, "rule_ids": ["CMD-RM-RF"]}
 {"sample": "cmd/invoke_webrequest.txt", "blocked": false, "rule_ids": ["URL-EXECUTABLE"]}
 {"sample": "cmd/mshta.txt", "blocked": true, "rule_ids": ["CMD-MSHTA"]}
 {"sample": "cmd/powershell-enc.txt", "blocked": true, "rule_ids": ["CMD-POWERSHELL-ENC"]}
+{"sample": "cmd/powershell-encoded-maintenance.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "cmd/powershell_enc.txt", "blocked": true, "rule_ids": ["CMD-POWERSHELL-ENC"]}
-{"sample": "cmd/powershell_iwr.txt", "blocked": true, "rule_ids": ["URL-EXECUTABLE", "CMD-POWERSHELL-IWR"]}
+{"sample": "cmd/powershell_iwr.txt", "blocked": true, "rule_ids": ["CMD-POWERSHELL-IWR", "URL-EXECUTABLE"]}
 {"sample": "cmd/reg-add.txt", "blocked": true, "rule_ids": ["CMD-REG-ADD"]}
 {"sample": "cmd/reg_add.txt", "blocked": true, "rule_ids": ["CMD-REG-ADD"]}
 {"sample": "cmd/rm_rf.txt", "blocked": true, "rule_ids": ["CMD-RM-RF"]}
-{"sample": "cmd/rundll32.txt", "blocked": true, "rule_ids": ["URL-EXECUTABLE", "CMD-RUNDLL32"]}
-{"sample": "cmd/wget_bash.txt", "blocked": true, "rule_ids": ["URL-EXECUTABLE", "CMD-WGET-BASH"]}
+{"sample": "cmd/rundll32.txt", "blocked": true, "rule_ids": ["CMD-RUNDLL32", "URL-EXECUTABLE"]}
+{"sample": "cmd/wget_bash.txt", "blocked": true, "rule_ids": ["CMD-WGET-BASH", "URL-EXECUTABLE"]}
 {"sample": "exfil/base64-dump.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "exfil/base64_blob.txt", "blocked": true, "rule_ids": ["EXFIL-LARGE-B64"]}
 {"sample": "exfil/base64_blob2.txt", "blocked": true, "rule_ids": ["EXFIL-LARGE-B64"]}
 {"sample": "exfil/hex-stream.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "exfil/hex_blob.txt", "blocked": false, "rule_ids": []}
 {"sample": "exfil/hex_blob2.txt", "blocked": true, "rule_ids": ["EXFIL-LARGE-HEX"]}
+{"sample": "exfil/large-base64-dump.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
+{"sample": "exfil/long-hex-buffer.txt", "blocked": true, "rule_ids": ["EXFIL-LARGE-HEX"]}
 {"sample": "exfil/mixed-entropy.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "exfil/safe-csv-like.txt", "blocked": false, "rule_ids": []}
 {"sample": "exfil/safe-repetitive-log.txt", "blocked": false, "rule_ids": []}
-{"sample": "pii/de-iban.txt", "blocked": false, "rule_ids": ["PII-PHONE-FR", "PII-IBAN-DE"]}
+{"sample": "pii/de-iban.txt", "blocked": false, "rule_ids": ["PII-IBAN-DE", "PII-PHONE-FR"]}
 {"sample": "pii/email.txt", "blocked": false, "rule_ids": ["PII-EMAIL"]}
-{"sample": "pii/iban_de.txt", "blocked": false, "rule_ids": ["PII-PHONE-FR", "PII-IBAN-DE"]}
+{"sample": "pii/fr-office-contact.txt", "blocked": false, "rule_ids": ["PII-PHONE-FR"]}
+{"sample": "pii/iban_de.txt", "blocked": false, "rule_ids": ["PII-IBAN-DE", "PII-PHONE-FR"]}
 {"sample": "pii/iban_tr.txt", "blocked": false, "rule_ids": []}
 {"sample": "pii/ipv4.txt", "blocked": false, "rule_ids": ["PII-IPV4"]}
 {"sample": "pii/mixed-ip-bilingual.txt", "blocked": false, "rule_ids": ["PII-IPV4", "PII-IPV4"]}
@@ -45,33 +52,37 @@
 {"sample": "pii/phone_es.txt", "blocked": false, "rule_ids": ["PII-PHONE-ES"]}
 {"sample": "pii/phone_fr.txt", "blocked": false, "rule_ids": ["PII-PHONE-FR"]}
 {"sample": "pii/phone_hi.txt", "blocked": false, "rule_ids": ["PII-PHONE-HI"]}
-{"sample": "pii/phone_it.txt", "blocked": false, "rule_ids": ["PII-PHONE-TR", "PII-PHONE-EN", "PII-PHONE-IT"]}
+{"sample": "pii/phone_it.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN", "PII-PHONE-IT", "PII-PHONE-TR"]}
 {"sample": "pii/phone_pt.txt", "blocked": false, "rule_ids": ["PII-PHONE-ES", "PII-PHONE-PT"]}
-{"sample": "pii/phone_ru.txt", "blocked": false, "rule_ids": ["PII-PHONE-TR", "PII-PHONE-RU"]}
+{"sample": "pii/phone_ru.txt", "blocked": false, "rule_ids": ["PII-PHONE-RU", "PII-PHONE-TR"]}
 {"sample": "pii/phone_tr.txt", "blocked": false, "rule_ids": ["PII-PHONE-TR"]}
-{"sample": "pii/phone_zh.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN", "PII-PHONE-DE", "PII-PHONE-ZH"]}
-{"sample": "pii/tckn-inline.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN", "PII-PHONE-DE", "PII-TCKN"]}
-{"sample": "pii/tckn.txt", "blocked": false, "rule_ids": ["PII-PHONE-EN", "PII-PHONE-DE"]}
+{"sample": "pii/phone_zh.txt", "blocked": false, "rule_ids": ["PII-PHONE-DE", "PII-PHONE-EN", "PII-PHONE-ZH"]}
+{"sample": "pii/tckn-inline.txt", "blocked": false, "rule_ids": ["PII-PHONE-DE", "PII-PHONE-EN", "PII-TCKN"]}
+{"sample": "pii/tckn.txt", "blocked": false, "rule_ids": ["PII-PHONE-DE", "PII-PHONE-EN"]}
+{"sample": "pii/tr-hastane-iletisim.txt", "blocked": false, "rule_ids": ["PII-PHONE-TR"]}
 {"sample": "pii/tr-phone-format.txt", "blocked": false, "rule_ids": ["PII-PHONE-TR"]}
 {"sample": "secrets/aws-keys.txt", "blocked": true, "rule_ids": ["SECRET-AWS-AK", "SECRET-AWS-SK", "SECRET-HIGH-ENTROPY"]}
 {"sample": "secrets/aws_access_key.txt", "blocked": true, "rule_ids": ["SECRET-AWS-AK"]}
 {"sample": "secrets/aws_secret_key.txt", "blocked": true, "rule_ids": ["SECRET-AWS-SK", "SECRET-HIGH-ENTROPY"]}
 {"sample": "secrets/azure_sas.txt", "blocked": true, "rule_ids": ["SECRET-AZURE-SAS"]}
-{"sample": "secrets/gcp_sa.txt", "blocked": true, "rule_ids": ["PII-EMAIL", "SECRET-PEM", "SECRET-HIGH-ENTROPY"]}
+{"sample": "secrets/gcp_sa.txt", "blocked": true, "rule_ids": ["PII-EMAIL", "SECRET-HIGH-ENTROPY", "SECRET-PEM"]}
+{"sample": "secrets/github-high-entropy-token.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "secrets/github-token.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "secrets/github.txt", "blocked": true, "rule_ids": ["SECRET-GITHUB"]}
 {"sample": "secrets/high_entropy.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/jwt-access.txt", "blocked": true, "rule_ids": ["SECRET-JWT", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/jwt.txt", "blocked": true, "rule_ids": ["SECRET-JWT", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY"]}
+{"sample": "secrets/jwt-access.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-JWT"]}
+{"sample": "secrets/jwt-sample-dump.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-JWT"]}
+{"sample": "secrets/jwt.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-JWT"]}
 {"sample": "secrets/openai-key.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/openai.txt", "blocked": true, "rule_ids": ["SECRET-OPENAI", "SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/pem-private.txt", "blocked": true, "rule_ids": ["SECRET-PEM", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/pem.txt", "blocked": true, "rule_ids": ["SECRET-PEM", "SECRET-HIGH-ENTROPY"]}
+{"sample": "secrets/openai-project-key.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
+{"sample": "secrets/openai.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-OPENAI"]}
+{"sample": "secrets/pem-private.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-HIGH-ENTROPY", "SECRET-PEM"]}
+{"sample": "secrets/pem.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-PEM"]}
 {"sample": "secrets/slack.txt", "blocked": true, "rule_ids": ["SECRET-SLACK"]}
-{"sample": "secrets/stripe.txt", "blocked": true, "rule_ids": ["SECRET-STRIPE", "SECRET-HIGH-ENTROPY"]}
-{"sample": "secrets/twilio.txt", "blocked": true, "rule_ids": ["SECRET-TWILIO", "SECRET-HIGH-ENTROPY"]}
+{"sample": "secrets/stripe.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-STRIPE"]}
+{"sample": "secrets/twilio.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY", "SECRET-TWILIO"]}
 {"sample": "url/benign-doc.txt", "blocked": false, "rule_ids": []}
-{"sample": "url/cred-in-url.txt", "blocked": true, "rule_ids": ["PII-EMAIL", "URL-EXECUTABLE", "URL-CREDENTIALS"]}
+{"sample": "url/cred-in-url.txt", "blocked": true, "rule_ids": ["PII-EMAIL", "URL-CREDENTIALS", "URL-EXECUTABLE"]}
 {"sample": "url/cred_in_url.txt", "blocked": true, "rule_ids": ["PII-EMAIL", "URL-CREDENTIALS"]}
 {"sample": "url/data-uri-svg.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
 {"sample": "url/data_uri.txt", "blocked": true, "rule_ids": ["SECRET-HIGH-ENTROPY"]}
@@ -79,9 +90,11 @@
 {"sample": "url/executable2.txt", "blocked": false, "rule_ids": ["URL-EXECUTABLE"]}
 {"sample": "url/ip_literal.txt", "blocked": false, "rule_ids": ["PII-IPV4", "URL-IP-LITERAL"]}
 {"sample": "url/ip_literal2.txt", "blocked": false, "rule_ids": ["PII-IPV4", "URL-EXECUTABLE", "URL-IP-LITERAL"]}
+{"sample": "url/shortener-forward.txt", "blocked": false, "rule_ids": ["URL-SHORTENER"]}
 {"sample": "url/shortener-link.txt", "blocked": false, "rule_ids": ["URL-SHORTENER"]}
 {"sample": "url/shortener.txt", "blocked": false, "rule_ids": ["URL-SHORTENER"]}
 {"sample": "url/shortener2.txt", "blocked": false, "rule_ids": ["URL-SHORTENER"]}
+{"sample": "url/suspicious-backup-zip.txt", "blocked": false, "rule_ids": ["URL-EXECUTABLE", "URL-SUSPICIOUS-TLD"]}
 {"sample": "url/suspicious-tld.txt", "blocked": false, "rule_ids": []}
 {"sample": "url/suspicious_tld.txt", "blocked": false, "rule_ids": ["URL-EXECUTABLE", "URL-SUSPICIOUS-TLD"]}
 {"sample": "url/suspicious_tld2.txt", "blocked": false, "rule_ids": ["URL-SUSPICIOUS-TLD"]}

@@ -1,0 +1,2 @@
+The nightly backup is allegedly at this link: https://downloads.example.zip/builds/agent.zip
+Do not click without validating the checksum.

@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # Feature flags
     feature_ml_preclf: bool = Field(default=True, alias="FEATURE_ML_PRECLF")
-    feature_ml_validator: bool = Field(default=False, alias="FEATURE_ML_VALIDATOR")
+    feature_ml_validator: bool = Field(default=True, alias="FEATURE_ML_VALIDATOR")
     feature_context_parsing: bool = Field(default=True, alias="FEATURE_CONTEXT_PARSING")
     shadow_mode: bool = Field(default=False, alias="SHADOW_MODE")
 

@@ -1,0 +1,5 @@
+This document outlines the three-layer architecture for the chat gateway service.
+Requests enter through the API tier, are validated by a policy engine, and then
+pass to the generation backend. Each layer publishes metrics and logs, but there
+are no shell commands or secrets in this overview. Configuration is driven by
+YAML files checked into the repo, and deployments use blue/green rollouts.

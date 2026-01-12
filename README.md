@@ -30,6 +30,12 @@ conda create -y -p "$HOME/.conda/envs/LLM Egress Guard" python=3.11
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate "$HOME/.conda/envs/LLM Egress Guard"
 pip install -e .[dev]
+
+# Download spaCy models for the PII validator (EN/DE)
+python -m spacy download en_core_web_sm
+python -m spacy download de_core_news_sm
+# (Optional) Disable validator if you need a lighter env:
+# export FEATURE_ML_VALIDATOR=false
 ```
 
 > The space in the environment path is intentional. Always activate this environment before running any commands for the project.
@@ -72,6 +78,12 @@ PYTHONPATH=. python scripts/demo_policy_reload.py  # policy hot-reload demo
 - The `--matrix-report` flag saves demo responses under `tests/regression/artifacts/` for SOC runbooks; the directory is gitignored by default.
 
 `ci/github-actions.yml` mirrors the same checks on every push/PR.
+
+## Demo Scripts
+
+- `python scripts/demo_scenarios.py` runs the four PRD demos (email mask, JWT block, curl|bash block, exfil block). Override the endpoint with `--api-url` (default `http://127.0.0.1:8080/guard` for uvicorn).
+- Shell version: `API_URL=https://localhost/guard ./scripts/demo_scenarios.sh` (use `-k` with curl because docker-compose uses self-signed TLS via Nginx).
+- To populate the new ML Grafana panels, keep `FEATURE_ML_PRECLF=true`, `SHADOW_MODE=true`, and run a few demo requests so Prometheus can scrape metrics.
 
 ## 4. Project Layout
 
@@ -128,3 +140,4 @@ Production deployment should enable `REQUIRE_API_KEY=true` and set a strong `API
 - Continue regression corpus expansion (multilingual/tutorial-heavy cases) and tuning based on shadow-mode findings.
 - (Optional) CI enforcement of model checksum via `scripts/check_preclf_model.py`.
 - Streaming support for chat interfaces (pass-through stream, buffer window, scan, release).
+- Post-MVP follow-ups: wire SIEM connectors and the AWS Lambda transport adapter.
