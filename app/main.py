@@ -141,7 +141,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     timeout=settings.request_timeout_seconds,
                 )
                 return GuardResponseModel(**result.asdict())
-            except TimeoutError:
+            except asyncio.TimeoutError:
                 _security_logger.warning(
                     "request_timeout",
                     path="/guard",

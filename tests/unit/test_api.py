@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 from app.main import create_app
+from app.settings import Settings, get_settings
 from fastapi.testclient import TestClient
 
 
 def get_client() -> TestClient:
-    app = create_app()
+    import os
+
+    os.environ["REQUIRE_API_KEY"] = "false"
+    os.environ.pop("API_KEY", None)
+    get_settings.cache_clear()
+    base_settings = Settings()
+    base_settings.require_api_key = False
+    base_settings.api_key = None
+    app = create_app(settings=base_settings)
     return TestClient(app)
 
 

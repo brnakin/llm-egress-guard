@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,6 +15,7 @@ class DummySettings:
     policy_path: Path = Path("config/policy.yaml")
     model_version: str = "test"
     feature_ml_preclf: bool = False  # Disable ML for predictable test behavior
+    feature_ml_validator: bool = False  # Disable spaCy validator in unit tests
     feature_context_parsing: bool = True
     shadow_mode: bool = False
     preclf_model_path: Path = Path("models/preclf_v1.joblib")
@@ -166,7 +168,7 @@ def test_exfil_detector_flags_large_base64() -> None:
     policy = build_policy(
         [PolicyRule(id="EXFIL-B64", type="exfil", action="block", kind="large_base64")]
     )
-    payload = ("A" * 900) + "=="
+    payload = base64.b64encode(bytes(range(256)) * 4).decode()
 
     findings = exfil.scan(payload, policy=policy)
 
