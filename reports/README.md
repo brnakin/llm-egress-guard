@@ -4,6 +4,10 @@ This directory contains sprint reports, security assessments, and project docume
 
 > For the global documentation map, see [docs/README.md](../docs/README.md).
 
+## Source Code
+
+- GitHub repository: `https://github.com/brnakin/llm-egress-guard`
+
 ## Contents
 
 - **Sprint-1-Report.\{md,pdf,docx\}** - Sprint 1 completion report (Oct 17-31, 2025)
@@ -32,6 +36,13 @@ This directory contains sprint reports, security assessments, and project docume
   - Code-referenced findings with impact analysis
   - Exploitation scenarios
   - Detailed remediation recommendations
+
+## Capstone Deliverables
+
+These are maintained under `docs/` for easy navigation:
+
+- **Essay**: [`docs/Capstone-Project-Essay.md`](../docs/Capstone-Project-Essay.md)
+- **Proposal (project artifact)**: [`docs/LLM_Egress_Guard_Baran_Akin_Capstone_Proposal.pdf`](../docs/LLM_Egress_Guard_Baran_Akin_Capstone_Proposal.pdf)
 
 ## Report Format
 

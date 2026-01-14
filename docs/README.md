@@ -50,5 +50,19 @@ Use this file as the quick reference for where each major document lives and wha
 
 ## Additional Notes
 
-- For CI, benchmarking, or scripting details see `Makefile`, `ci/github-actions.yml`, and the `scripts/` directory.
+- For CI, benchmarking, or scripting details see `Makefile`, `.github/workflows/ci.yml`, and the `scripts/` directory.
 - When adding new docs, append them to this index to keep navigation simple.
+
+## Capstone Deliverables (Quick Links)
+
+| File | Description |
+|------|-------------|
+| [`docs/Capstone-Project-Essay.md`](./Capstone-Project-Essay.md) | Template-structured capstone essay (ready to paste into Word). |
+| [`docs/LLM_Egress_Guard_Baran_Akin_Capstone_Proposal.pdf`](./LLM_Egress_Guard_Baran_Akin_Capstone_Proposal.pdf) | Original capstone proposal (project artifact). |
+| [`docs/system-design.png`](./system-design.png) | System Design diagram (matches final pipeline). |
+| [`docs/request-lifecycle.png`](./request-lifecycle.png) | Request Lifecycle diagram (matches final request flow). |
+| [`docs/deployment-runtime.png`](./deployment-runtime.png) | Deployment/Runtime diagram (matches docker-compose + Nginx layout). |
+
+## Source Code
+
+- GitHub repository: `https://github.com/brnakin/llm-egress-guard`
